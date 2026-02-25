@@ -1,0 +1,121 @@
+{
+    "common": {
+        "back": "Back",
+        "loading": "Loading...",
+        "error": "Error"
+    },
+    "nav": {
+        "home": "Home",
+        "about": "About",
+        "settings": "Settings",
+        "examples": "Examples"
+    },
+    "home": {
+        "title": "Welcome to Tauri!",
+        "subtitle": "A modern boilerplate for building desktop apps",
+        "description": "This boilerplate includes React 19, TypeScript, TailwindCSS, and Tauri v2 with a clean architecture.",
+        "features": {
+            "title": "Features",
+            "theme": "Light/Dark theme with system support",
+            "composables": "Reusable composables (Nuxt-style hooks)",
+            "routing": "React Router with MemoryRouter",
+            "ui": "shadcn/ui components",
+            "notifications": "Native system notifications",
+            "window": "Window control API"
+        },
+        "getStarted": "Get Started",
+        "viewExamples": "View Examples"
+    },
+    "about": {
+        "title": "About",
+        "description": "This is a production-ready Tauri boilerplate with modern technologies.",
+        "tech": {
+            "title": "Technologies",
+            "frontend": "Frontend: React 19, TypeScript, TailwindCSS",
+            "backend": "Backend: Rust, Tauri v2",
+            "ui": "UI: shadcn/ui, Lucide Icons",
+            "routing": "Routing: React Router v7"
+        },
+        "architecture": {
+            "title": "Architecture",
+            "modular": "Modular and scalable structure",
+            "composables": "Reusable composables for Tauri APIs",
+            "typed": "Full TypeScript type-safety",
+            "documented": "Complete documentation"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "theme": {
+            "title": "Theme",
+            "description": "Choose your preferred theme",
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System",
+            "systemDescription": "Automatically adapts to your system preferences"
+        },
+        "language": {
+            "title": "Language",
+            "description": "Choose your preferred language",
+            "en": "English",
+            "fr": "Français"
+        },
+        "updates": {
+            "title": "Updates",
+            "currentVersion": "Current version",
+            "check": "Check for updates"
+        }
+    },
+    "updater": {
+        "title": "Update Available",
+        "version": "A new version is available",
+        "install": "Install",
+        "downloading": "Downloading...",
+        "later": "Later"
+    },
+    "update": {
+        "title": "Updates",
+        "currentVersion": "Current version",
+        "availableVersion": "Available version",
+        "checking": "Checking for updates...",
+        "upToDate": "You are up to date.",
+        "available": "Update available",
+        "checkFailed": "Check failed",
+        "checkButton": "Check for updates",
+        "installButton": "Install Update",
+        "installing": "Installing...",
+        "downloading": "Downloading..."
+    },
+    "examples": {
+        "title": "Tauri API Examples",
+        "subtitle": "Demonstration of available Tauri composables",
+        "window": {
+            "title": "Window Control",
+            "minimize": "Minimize",
+            "maximize": "Toggle Maximize",
+            "close": "Close"
+        },
+        "notifications": {
+            "title": "Notifications",
+            "send": "Send Notification",
+            "description": "Native system notifications",
+            "test": {
+                "title": "Notification Test",
+                "body": "This is a native system notification!"
+            }
+        },
+        "system": {
+            "title": "System Info",
+            "get": "Get System Info",
+            "os": "OS",
+            "arch": "Architecture",
+            "family": "Family"
+        }
+    },
+    "notFound": {
+        "title": "404",
+        "subtitle": "Page Not Found",
+        "description": "The page you are looking for does not exist.",
+        "backHome": "Back to Home"
+    }
+}
