@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    boilerplate_lib::run()
+    pictoolsapp_lib::run()
 }

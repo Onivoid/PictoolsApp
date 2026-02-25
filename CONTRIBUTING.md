@@ -1,12 +1,12 @@
 # Contributing Guide
 
-Thank you for your interest in contributing to this boilerplate! 🎉
+Thank you for your interest in contributing to PictoolsApp! 🎉
 
 ## 🚀 How to Contribute
 
 ### Report a Bug
 
-1. Check that the bug hasn't already been reported in [Issues](https://github.com/your-username/tauri-react-boilerplate/issues)
+1. Check that the bug hasn't already been reported in [Issues](https://github.com/Onivoid/PictoolsApp/issues)
 2. Create a new issue with:
     - A descriptive title
     - Steps to reproduce the bug

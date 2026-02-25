@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Initial boilerplate architecture
+- Initial PictoolsApp architecture
 - Light/dark theme system with system preference support
 - Reusable composables (useTheme, useWindow, useNotification, useLanguage, etc.)
 - shadcn/ui integration for UI components
@@ -45,11 +45,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Initial boilerplate version
+- Initial PictoolsApp version
 - Tauri v2 configuration
 - React 19 setup with TypeScript
 - TailwindCSS v4
 - Vite as build tool
 
-[Unreleased]: https://github.com/votre-username/tauri-react-boilerplate/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/votre-username/tauri-react-boilerplate/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Onivoid/PictoolsApp/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Onivoid/PictoolsApp/releases/tag/v0.1.0

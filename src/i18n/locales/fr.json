@@ -12,8 +12,8 @@
     },
     "home": {
         "title": "Bienvenue sur Tauri !",
-        "subtitle": "Un boilerplate moderne pour créer des applications desktop",
-        "description": "Ce boilerplate inclut React 19, TypeScript, TailwindCSS et Tauri v2 avec une architecture propre.",
+        "subtitle": "Une boîte à outils moderne pour travailler avec des images",
+        "description": "PictoolsApp inclut React 19, TypeScript, TailwindCSS et Tauri v2 avec une architecture propre.",
         "features": {
             "title": "Fonctionnalités",
             "theme": "Thème clair/sombre avec support système",
@@ -28,7 +28,7 @@
     },
     "about": {
         "title": "À propos",
-        "description": "Ceci est un boilerplate Tauri production-ready avec des technologies modernes.",
+        "description": "PictoolsApp est une application Tauri production-ready avec des technologies modernes.",
         "tech": {
             "title": "Technologies",
             "frontend": "Frontend : React 19, TypeScript, TailwindCSS",

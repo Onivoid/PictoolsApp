@@ -1,6 +1,6 @@
-# 🚀 Tauri React Boilerplate
+# 🚀 PictoolsApp
 
-A modern, production-ready boilerplate for building desktop applications with Tauri v2, React 19, TypeScript, and TailwindCSS.
+A modern, production-ready desktop application built with Tauri v2, React 19, TypeScript, and TailwindCSS.
 
 [![Tauri](https://img.shields.io/badge/Tauri-2.x-blue.svg)](https://tauri.app/)
 [![React](https://img.shields.io/badge/React-19.x-61dafb.svg)](https://react.dev/)
@@ -59,8 +59,8 @@ A modern, production-ready boilerplate for building desktop applications with Ta
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/tauri-react-boilerplate.git
-cd tauri-react-boilerplate
+git clone https://github.com/Onivoid/PictoolsApp.git
+cd PictoolsApp
 
 # Install dependencies
 pnpm install
@@ -104,7 +104,7 @@ pnpm tauri build  # Build app for production
 
 ## 🔄 Auto-Update System
 
-This boilerplate includes a fully configured automatic update system using Tauri's updater plugin.
+PictoolsApp includes a fully configured automatic update system using Tauri's updater plugin.
 
 ### How it works
 
@@ -132,7 +132,7 @@ The updater is configured in `src-tauri/tauri.conf.json`:
 
 ### Setting up for your project
 
-1. **Generate signing keys** (already done for this boilerplate):
+1. **Generate signing keys** (already done for this project):
 
     ```bash
     pnpm tauri signer generate -w ~/.tauri/myapp.key
@@ -227,7 +227,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 - 📖 [Tauri Documentation](https://tauri.app/v2/guides/)
 - 💬 [Tauri Discord](https://discord.com/invite/tauri)
-- 🐛 [GitHub Issues](https://github.com/your-username/tauri-react-boilerplate/issues)
+- 🐛 [GitHub Issues](https://github.com/Onivoid/PictoolsApp/issues)
 
 ---
 
