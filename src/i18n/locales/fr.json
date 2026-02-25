@@ -1,121 +1,87 @@
 {
-    "common": {
-        "back": "Retour",
-        "loading": "Chargement...",
-        "error": "Erreur"
-    },
-    "nav": {
-        "home": "Accueil",
-        "about": "À propos",
-        "settings": "Paramètres",
-        "examples": "Exemples"
+    "topbar": {
+        "close": "Fermer",
+        "minimize": "Réduire",
+        "maximize": "Agrandir"
     },
     "home": {
-        "title": "Bienvenue sur Tauri !",
+        "title": "Accueil",
         "subtitle": "Une boîte à outils moderne pour travailler avec des images",
-        "description": "PictoolsApp inclut React 19, TypeScript, TailwindCSS et Tauri v2 avec une architecture propre.",
-        "features": {
-            "title": "Fonctionnalités",
-            "theme": "Thème clair/sombre avec support système",
-            "composables": "Composables réutilisables (hooks style Nuxt)",
-            "routing": "React Router avec MemoryRouter",
-            "ui": "Composants shadcn/ui",
-            "notifications": "Notifications système natives",
-            "window": "API de contrôle de fenêtre"
-        },
         "getStarted": "Commencer",
-        "viewExamples": "Voir les Exemples"
-    },
-    "about": {
-        "title": "À propos",
-        "description": "PictoolsApp est une application Tauri production-ready avec des technologies modernes.",
-        "tech": {
-            "title": "Technologies",
-            "frontend": "Frontend : React 19, TypeScript, TailwindCSS",
-            "backend": "Backend : Rust, Tauri v2",
-            "ui": "UI : shadcn/ui, Lucide Icons",
-            "routing": "Routing : React Router v7"
+        "tools": {
+            "converter": {
+                "title": "Convertisseur d'images",
+                "description": "Convertissez des images entre les formats PNG, JPEG, WEBP et ICO. Générez des fichiers .ico multi-tailles pour vos projets.",
+                "badge": "Disponible"
+            },
+            "comingSoon": {
+                "title": "D'autres outils arrivent",
+                "description": "De nouveaux outils d'édition d'images sont en cours de développement. Restez à l'écoute.",
+                "badge": "Bientôt"
+            }
         },
-        "architecture": {
-            "title": "Architecture",
-            "modular": "Structure modulaire et scalable",
-            "composables": "Composables réutilisables pour les APIs Tauri",
-            "typed": "Type-safety complète avec TypeScript",
-            "documented": "Documentation complète"
+        "open": "Ouvrir"
+    },
+    "convert": {
+        "title": "Convertisseur d'images",
+        "subtitle": "Convertissez des images en PNG, JPEG, WEBP ou ICO",
+        "outputFormat": "Format de sortie",
+        "icoSizes": "Tailles ICO",
+        "outputFolder": "Dossier de sortie",
+        "chooseFolder": "Choisir un dossier…",
+        "convert": "Convertir",
+        "converting": "Conversion…",
+        "openFolder": "Ouvrir le dossier",
+        "clearAll": "Tout effacer",
+        "dropzone": {
+            "idle": "Déposez des images ou cliquez pour parcourir",
+            "dragging": "Déposez les images ici",
+            "hint": "PNG, JPEG, WEBP, BMP, GIF, TIFF supportés"
+        },
+        "status": {
+            "pending": "En attente",
+            "done": "converti",
+            "error": "erreur",
+            "errors": "erreurs",
+            "file": "fichier",
+            "files": "fichiers",
+            "noResult": "Aucun résultat retourné"
         }
+    },
+    "sidebar": {
+        "tools": "Outils",
+        "comingSoon": "Bientôt disponible",
+        "collapse": "Réduire",
+        "expand": "Développer"
     },
     "settings": {
         "title": "Paramètres",
+        "subtitle": "Gérez vos préférences",
         "theme": {
-            "title": "Thème",
-            "description": "Choisissez votre thème préféré",
+            "label": "Apparence",
             "light": "Clair",
             "dark": "Sombre",
-            "system": "Système",
-            "systemDescription": "S'adapte automatiquement aux préférences de votre système"
+            "system": "Système"
         },
         "language": {
-            "title": "Langue",
-            "description": "Choisissez votre langue préférée",
+            "label": "Langue",
             "en": "English",
             "fr": "Français"
         },
-        "updates": {
-            "title": "Mises à jour",
-            "currentVersion": "Version actuelle",
-            "check": "Vérifier les mises à jour"
+        "version": {
+            "label": "Version",
+            "checkUpdate": "Vérifier les mises à jour",
+            "checking": "Vérification…",
+            "upToDate": "À jour",
+            "updateAvailable": "Mise à jour disponible",
+            "noUpdater": "Mise à jour automatique non configurée"
         }
     },
-    "updater": {
-        "title": "Mise à jour disponible",
-        "version": "Une nouvelle version est disponible",
-        "install": "Installer",
-        "downloading": "Téléchargement...",
-        "later": "Plus tard"
-    },
-    "update": {
-        "title": "Mises à jour",
-        "currentVersion": "Version actuelle",
-        "availableVersion": "Version disponible",
-        "checking": "Vérification des mises à jour...",
-        "upToDate": "Vous êtes à jour.",
-        "available": "Mise à jour disponible",
-        "checkFailed": "Vérification échouée",
-        "checkButton": "Vérifier les mises à jour",
-        "installButton": "Installer la mise à jour",
-        "installing": "Installation...",
-        "downloading": "Téléchargement..."
-    },
-    "examples": {
-        "title": "Exemples d'API Tauri",
-        "subtitle": "Démonstration des composables Tauri disponibles",
-        "window": {
-            "title": "Contrôle Fenêtre",
-            "minimize": "Minimiser",
-            "maximize": "Maximiser/Restaurer",
-            "close": "Fermer"
-        },
-        "notifications": {
-            "title": "Notifications",
-            "send": "Envoyer une Notification",
-            "description": "Notifications système natives",
-            "test": {
-                "title": "Test de Notification",
-                "body": "Ceci est une notification système native !"
-            }
-        },
-        "system": {
-            "title": "Info Système",
-            "get": "Obtenir les Infos Système",
-            "os": "OS",
-            "arch": "Architecture",
-            "family": "Famille"
-        }
-    },
-    "notFound": {
-        "title": "404",
-        "subtitle": "Page Introuvable",
-        "description": "La page que vous recherchez n'existe pas.",
-        "backHome": "Retour à l'Accueil"
+    "appIcons": {
+        "format": "App Icons",
+        "description": "Génère le pack d'icônes complet pour la distribution d'application (PNG, ICO, ICNS) selon les conventions de chaque plateforme.",
+        "files": "fichiers générés",
+        "invoking": "Génération…",
+        "invoke": "Générer"
     }
 }

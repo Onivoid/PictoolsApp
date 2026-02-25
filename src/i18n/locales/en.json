@@ -1,121 +1,87 @@
 {
-    "common": {
-        "back": "Back",
-        "loading": "Loading...",
-        "error": "Error"
-    },
-    "nav": {
-        "home": "Home",
-        "about": "About",
-        "settings": "Settings",
-        "examples": "Examples"
+    "topbar": {
+        "close": "Close",
+        "minimize": "Minimize",
+        "maximize": "Maximize"
     },
     "home": {
-        "title": "Welcome to Tauri!",
+        "title": "Home",
         "subtitle": "A modern toolbox for working with images",
-        "description": "PictoolsApp includes React 19, TypeScript, TailwindCSS, and Tauri v2 with a clean architecture.",
-        "features": {
-            "title": "Features",
-            "theme": "Light/Dark theme with system support",
-            "composables": "Reusable composables (Nuxt-style hooks)",
-            "routing": "React Router with MemoryRouter",
-            "ui": "shadcn/ui components",
-            "notifications": "Native system notifications",
-            "window": "Window control API"
-        },
         "getStarted": "Get Started",
-        "viewExamples": "View Examples"
-    },
-    "about": {
-        "title": "About",
-        "description": "PictoolsApp is a production-ready Tauri application with modern technologies.",
-        "tech": {
-            "title": "Technologies",
-            "frontend": "Frontend: React 19, TypeScript, TailwindCSS",
-            "backend": "Backend: Rust, Tauri v2",
-            "ui": "UI: shadcn/ui, Lucide Icons",
-            "routing": "Routing: React Router v7"
+        "tools": {
+            "converter": {
+                "title": "Image Converter",
+                "description": "Convert images between PNG, JPEG, WEBP and ICO formats. Generate multi-size .ico files for your projects.",
+                "badge": "Available"
+            },
+            "comingSoon": {
+                "title": "More tools coming",
+                "description": "Additional image editing tools are on the way. Stay tuned for updates.",
+                "badge": "Soon"
+            }
         },
-        "architecture": {
-            "title": "Architecture",
-            "modular": "Modular and scalable structure",
-            "composables": "Reusable composables for Tauri APIs",
-            "typed": "Full TypeScript type-safety",
-            "documented": "Complete documentation"
+        "open": "Open"
+    },
+    "convert": {
+        "title": "Image Converter",
+        "subtitle": "Convert images to PNG, JPEG, WEBP or ICO",
+        "outputFormat": "Output Format",
+        "icoSizes": "ICO Sizes",
+        "outputFolder": "Output Folder",
+        "chooseFolder": "Choose folder…",
+        "convert": "Convert",
+        "converting": "Converting…",
+        "openFolder": "Open Folder",
+        "clearAll": "Clear all",
+        "dropzone": {
+            "idle": "Drop images or click to browse",
+            "dragging": "Drop images here",
+            "hint": "PNG, JPEG, WEBP, BMP, GIF, TIFF supported"
+        },
+        "status": {
+            "pending": "Pending",
+            "done": "done",
+            "error": "error",
+            "errors": "errors",
+            "file": "file",
+            "files": "files",
+            "noResult": "No result returned"
         }
+    },
+    "sidebar": {
+        "tools": "Tools",
+        "comingSoon": "Coming soon",
+        "collapse": "Collapse",
+        "expand": "Expand"
     },
     "settings": {
         "title": "Settings",
+        "subtitle": "Manage your preferences",
         "theme": {
-            "title": "Theme",
-            "description": "Choose your preferred theme",
+            "label": "Appearance",
             "light": "Light",
             "dark": "Dark",
-            "system": "System",
-            "systemDescription": "Automatically adapts to your system preferences"
+            "system": "System"
         },
         "language": {
-            "title": "Language",
-            "description": "Choose your preferred language",
+            "label": "Language",
             "en": "English",
             "fr": "Français"
         },
-        "updates": {
-            "title": "Updates",
-            "currentVersion": "Current version",
-            "check": "Check for updates"
+        "version": {
+            "label": "Version",
+            "checkUpdate": "Check for updates",
+            "checking": "Checking…",
+            "upToDate": "Up to date",
+            "updateAvailable": "Update available",
+            "noUpdater": "Auto-update not configured"
         }
     },
-    "updater": {
-        "title": "Update Available",
-        "version": "A new version is available",
-        "install": "Install",
-        "downloading": "Downloading...",
-        "later": "Later"
-    },
-    "update": {
-        "title": "Updates",
-        "currentVersion": "Current version",
-        "availableVersion": "Available version",
-        "checking": "Checking for updates...",
-        "upToDate": "You are up to date.",
-        "available": "Update available",
-        "checkFailed": "Check failed",
-        "checkButton": "Check for updates",
-        "installButton": "Install Update",
-        "installing": "Installing...",
-        "downloading": "Downloading..."
-    },
-    "examples": {
-        "title": "Tauri API Examples",
-        "subtitle": "Demonstration of available Tauri composables",
-        "window": {
-            "title": "Window Control",
-            "minimize": "Minimize",
-            "maximize": "Toggle Maximize",
-            "close": "Close"
-        },
-        "notifications": {
-            "title": "Notifications",
-            "send": "Send Notification",
-            "description": "Native system notifications",
-            "test": {
-                "title": "Notification Test",
-                "body": "This is a native system notification!"
-            }
-        },
-        "system": {
-            "title": "System Info",
-            "get": "Get System Info",
-            "os": "OS",
-            "arch": "Architecture",
-            "family": "Family"
-        }
-    },
-    "notFound": {
-        "title": "404",
-        "subtitle": "Page Not Found",
-        "description": "The page you are looking for does not exist.",
-        "backHome": "Back to Home"
+    "appIcons": {
+        "format": "App Icons",
+        "description": "Generate the full icon set for app distribution (PNG, ICO, ICNS) following platform conventions.",
+        "files": "files generated",
+        "invoking": "Generating…",
+        "invoke": "Generate"
     }
 }

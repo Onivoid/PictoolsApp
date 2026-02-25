@@ -21,6 +21,9 @@
         "notification:allow-request-permission",
         "notification:allow-notify",
         "updater:default",
-        "process:default"
+        "process:default",
+        "dialog:default",
+        "dialog:allow-open",
+        "core:window:allow-start-dragging"
     ]
 }

@@ -120,4 +120,54 @@
     body {
         @apply bg-background text-foreground;
     }
+    html,
+    body,
+    #root {
+        @apply h-full;
+        overflow: hidden;
+    }
+    [data-tauri-drag-region] {
+        -webkit-app-region: drag;
+        app-region: drag;
+    }
+    [data-tauri-drag-region] button,
+    [data-tauri-drag-region] a,
+    [data-tauri-drag-region] input {
+        -webkit-app-region: no-drag;
+        app-region: no-drag;
+    }
+}
+
+/* Page entrance */
+@keyframes page-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-enter {
+    animation: page-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Sidebar collapse transition */
+.sidebar-transition {
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Nav item active indicator */
+@keyframes indicator-in {
+    from {
+        transform: scaleY(0);
+    }
+    to {
+        transform: scaleY(1);
+    }
+}
+.nav-indicator {
+    animation: indicator-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

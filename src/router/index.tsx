@@ -1,11 +1,8 @@
 import { createMemoryRouter } from "react-router-dom";
 import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home";
-import About from "@/pages/About";
+import Convert from "@/pages/Convert";
 import Settings from "@/pages/Settings";
-import Examples from "@/pages/Examples";
-import UpdatePage from "@/pages/Update";
-import NotFound from "@/pages/NotFound";
 
 export const router = createMemoryRouter([
   {
@@ -17,24 +14,12 @@ export const router = createMemoryRouter([
         element: <Home />,
       },
       {
-        path: "about",
-        element: <About />,
+        path: "convert",
+        element: <Convert />,
       },
       {
         path: "settings",
         element: <Settings />,
-      },
-      {
-        path: "examples",
-        element: <Examples />,
-      },
-      {
-        path: "update",
-        element: <UpdatePage />,
-      },
-      {
-        path: "*",
-        element: <NotFound />,
       },
     ],
   },

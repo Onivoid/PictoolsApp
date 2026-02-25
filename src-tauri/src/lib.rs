@@ -9,7 +9,13 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
-        .invoke_handler(tauri::generate_handler![greet, get_system_info])
+        .plugin(tauri_plugin_dialog::init())
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            get_system_info,
+            convert_images,
+            generate_app_icons
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
