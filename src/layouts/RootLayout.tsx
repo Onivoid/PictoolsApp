@@ -3,6 +3,7 @@ import { useTheme } from "@/composables";
 import TopBar from "@/components/TopBar";
 import Sidebar from "@/components/Sidebar";
 import { InteractiveGridBackground } from "@/components/interactive-grid-background";
+import { UpdateNotification } from "@/components/UpdateNotification";
 
 export default function RootLayout() {
   useTheme();
@@ -30,6 +31,9 @@ export default function RootLayout() {
           </div>
         </div>
       </InteractiveGridBackground>
+
+      {/* Update Notification */}
+      <UpdateNotification />
     </div>
   );
 }

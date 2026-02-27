@@ -2,12 +2,22 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
+import { readFileSync } from "fs";
 
 const host = process.env.TAURI_DEV_HOST;
+
+// Read version from package.json
+const packageJson = JSON.parse(
+    readFileSync(path.resolve(__dirname, "./package.json"), "utf-8"),
+);
 
 // https://vite.dev/config/
 export default defineConfig(async () => ({
     plugins: [react(), tailwindcss()],
+
+    define: {
+        __APP_VERSION__: JSON.stringify(packageJson.version),
+    },
 
     resolve: {
         alias: {

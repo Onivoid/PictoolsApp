@@ -5,4 +5,5 @@ export { useWindow } from "./useWindow";
 export { useNotification } from "./useNotification";
 export { useTheme } from "./useTheme";
 export { useLanguage } from "./useLanguage";
+export { useUpdater } from "./useUpdater";
 export type { Language } from "./useLanguage";

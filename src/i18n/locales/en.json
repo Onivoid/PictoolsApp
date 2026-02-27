@@ -77,6 +77,28 @@
             "noUpdater": "Auto-update not configured"
         }
     },
+    "updater": {
+        "available": {
+            "title": "Update Available",
+            "body": "Version {{version}} is available. Click to install.",
+            "description": "Version {{version}} is ready to install. The app will restart after installation."
+        },
+        "downloading": {
+            "title": "Downloading Update",
+            "body": "Please wait...",
+            "progress": "Downloading..."
+        },
+        "installed": {
+            "title": "Update Installed",
+            "body": "Restarting application..."
+        },
+        "error": {
+            "title": "Update Failed",
+            "body": "Failed to install update. Please try again."
+        },
+        "install": "Install Now",
+        "later": "Later"
+    },
     "appIcons": {
         "format": "App Icons",
         "description": "Generate the full icon set for app distribution (PNG, ICO, ICNS) following platform conventions.",

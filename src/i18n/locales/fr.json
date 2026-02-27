@@ -77,6 +77,28 @@
             "noUpdater": "Mise à jour automatique non configurée"
         }
     },
+    "updater": {
+        "available": {
+            "title": "Mise à jour disponible",
+            "body": "La version {{version}} est disponible. Cliquez pour installer.",
+            "description": "La version {{version}} est prête à être installée. L'application redémarrera après l'installation."
+        },
+        "downloading": {
+            "title": "Téléchargement en cours",
+            "body": "Veuillez patienter...",
+            "progress": "Téléchargement..."
+        },
+        "installed": {
+            "title": "Mise à jour installée",
+            "body": "Redémarrage de l'application..."
+        },
+        "error": {
+            "title": "Échec de la mise à jour",
+            "body": "Impossible d'installer la mise à jour. Veuillez réessayer."
+        },
+        "install": "Installer maintenant",
+        "later": "Plus tard"
+    },
     "appIcons": {
         "format": "App Icons",
         "description": "Génère le pack d'icônes complet pour la distribution d'application (PNG, ICO, ICNS) selon les conventions de chaque plateforme.",
