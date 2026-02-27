@@ -57,10 +57,7 @@ export function UpdateNotification() {
             {/* Body */}
             <div className="px-4 py-3">
               <p className="text-sm text-muted-foreground mb-3">
-                {t(
-                  "updater.available.description",
-                  `Version ${update.version} is ready to install. The app will restart after installation.`
-                )}
+                {t("updater.available.body", { version: update.version })}
               </p>
 
               {isDownloading && (

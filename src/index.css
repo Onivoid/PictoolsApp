@@ -122,29 +122,39 @@
         @apply bg-background text-foreground;
     }
 
-    /* Custom scrollbar */
+    /* Custom scrollbar - Cross-platform */
     ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
     }
 
     ::-webkit-scrollbar-track {
-        background: transparent;
+        background: oklch(from var(--muted) l c h / 0.3);
+        border-radius: 4px;
     }
 
     ::-webkit-scrollbar-thumb {
-        background: hsl(var(--primary) / 0.3);
-        border-radius: 3px;
+        background: oklch(from var(--primary) l c h / 0.4);
+        border-radius: 4px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: hsl(var(--primary) / 0.5);
+        background: oklch(from var(--primary) l c h / 0.6);
+        background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:active {
+        background: oklch(from var(--primary) l c h / 0.8);
+        background-clip: padding-box;
     }
 
     /* Firefox scrollbar */
     * {
         scrollbar-width: thin;
-        scrollbar-color: hsl(var(--primary) / 0.3) transparent;
+        scrollbar-color: oklch(from var(--primary) l c h / 0.4)
+            oklch(from var(--muted) l c h / 0.3);
     }
 
     html,
