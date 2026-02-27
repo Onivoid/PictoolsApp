@@ -6,6 +6,8 @@ import { openPath } from "@tauri-apps/plugin-opener";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Upload, X, CheckCircle2, AlertCircle, Loader2, FolderOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { motion, AnimatePresence } from "framer-motion";
+import { StaggerContainer, StaggerItem } from "@/components/animated";
 
 type TargetFormat = "png" | "jpeg" | "webp" | "ico" | "appicons";
 
@@ -355,7 +357,7 @@ export default function Convert() {
           )}
 
           {/* Drop zone */}
-          <div
+          <motion.div
             ref={dropRef}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -365,60 +367,90 @@ export default function Convert() {
               : "border-border hover:border-primary/50 hover:bg-muted/50"
               }`}
             onClick={handleBrowse}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            animate={isDragging ? { scale: 1.02 } : { scale: 1 }}
           >
-            <div className={`p-3 rounded-xl ${isDragging ? "bg-primary/10" : "bg-muted"}`}>
+            <motion.div
+              className={`p-3 rounded-xl ${isDragging ? "bg-primary/10" : "bg-muted"}`}
+              animate={isDragging ? { y: [0, -5, 0] } : {}}
+              transition={{ duration: 0.5, repeat: isDragging ? Infinity : 0 }}
+            >
               <Upload className={`w-6 h-6 ${isDragging ? "text-primary" : "text-muted-foreground"}`} />
-            </div>
+            </motion.div>
             <div className="text-center">
               <p className="text-sm font-medium text-foreground">
                 {isDragging ? t("convert.dropzone.dragging") : t("convert.dropzone.idle")}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">{t("convert.dropzone.hint")}</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* File list */}
           {files.length > 0 && (
-            <div className="flex-1 overflow-y-auto flex flex-col gap-1.5 min-h-0">
-              {files.map((file) => (
-                <div
-                  key={file.id}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-card border border-border group"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
-                    {file.error && (
-                      <p className="text-xs text-destructive truncate mt-0.5">{file.error}</p>
-                    )}
-                    {file.outputPath && (
-                      <p className="text-xs text-muted-foreground truncate mt-0.5">{file.outputPath.split(/[\\/]/).pop()}</p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {file.status === "pending" && (
-                      <span className="text-xs text-muted-foreground">{t("convert.status.pending")}</span>
-                    )}
-                    {file.status === "converting" && (
-                      <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                    )}
-                    {file.status === "done" && (
-                      <CheckCircle2 className="w-4 h-4 text-secondary" />
-                    )}
-                    {file.status === "error" && (
-                      <AlertCircle className="w-4 h-4 text-destructive" />
-                    )}
-                    {!isConverting && (
-                      <button
-                        onClick={() => removeFile(file.id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <StaggerContainer className="flex-1 overflow-y-auto flex flex-col gap-1.5 min-h-0">
+              <AnimatePresence mode="popLayout">
+                {files.map((file) => (
+                  <StaggerItem key={file.id}>
+                    <motion.div
+                      layout
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-card border border-border group"
+                      whileHover={{ scale: 1.01, borderColor: "hsl(var(--primary) / 0.3)" }}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
+                        {file.error && (
+                          <p className="text-xs text-destructive truncate mt-0.5">{file.error}</p>
+                        )}
+                        {file.outputPath && (
+                          <p className="text-xs text-muted-foreground truncate mt-0.5">{file.outputPath.split(/[\\/]/).pop()}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {file.status === "pending" && (
+                          <span className="text-xs text-muted-foreground">{t("convert.status.pending")}</span>
+                        )}
+                        {file.status === "converting" && (
+                          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                        )}
+                        {file.status === "done" && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                          >
+                            <CheckCircle2 className="w-4 h-4 text-secondary" />
+                          </motion.div>
+                        )}
+                        {file.status === "error" && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                          >
+                            <AlertCircle className="w-4 h-4 text-destructive" />
+                          </motion.div>
+                        )}
+                        {!isConverting && (
+                          <motion.button
+                            onClick={() => removeFile(file.id)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+                            whileHover={{ scale: 1.2 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </motion.button>
+                        )}
+                      </div>
+                    </motion.div>
+                  </StaggerItem>
+                ))}
+              </AnimatePresence>
+            </StaggerContainer>
           )}
         </div>
       </div>

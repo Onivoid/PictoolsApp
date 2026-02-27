@@ -1,7 +1,7 @@
 {
     "name": "pictoolsapp",
     "private": true,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -22,8 +22,10 @@
         "@tauri-apps/plugin-updater": "^2.10.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
+        "framer-motion": "^12.34.3",
         "i18next": "^25.8.0",
         "lucide-react": "^0.563.0",
+        "motion": "^12.34.3",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
         "react-i18next": "^16.5.4",

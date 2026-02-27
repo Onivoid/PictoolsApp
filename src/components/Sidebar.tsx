@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { House, ImageIcon, Layers, Settings, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { ROUTES } from "@/constants";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface NavItem {
   icon: React.ReactNode;
@@ -21,7 +22,7 @@ interface NavButtonProps {
 
 function NavButton({ item, collapsed, active, onClick }: NavButtonProps) {
   const btn = (
-    <button
+    <motion.button
       onClick={onClick}
       disabled={!item.available}
       className={`relative flex items-center w-full rounded-md text-sm font-medium
@@ -33,21 +34,35 @@ function NavButton({ item, collapsed, active, onClick }: NavButtonProps) {
             : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
           : "opacity-30 cursor-not-allowed text-muted-foreground"
         }`}
+      whileHover={item.available ? { x: collapsed ? 0 : 4, scale: collapsed ? 1.05 : 1 } : {}}
+      whileTap={item.available ? { scale: 0.95 } : {}}
     >
       {/* Active left bar */}
-      {active && (
-        <span className="nav-indicator absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-sm bg-primary" />
-      )}
-      <span className={`shrink-0 transition-colors duration-200 ${active ? "text-foreground" : ""}`}>
+      <AnimatePresence>
+        {active && (
+          <motion.span
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-r-sm bg-primary"
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={{ scaleY: 1, opacity: 1 }}
+            exit={{ scaleY: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          />
+        )}
+      </AnimatePresence>
+      <motion.span
+        className={`shrink-0 transition-colors duration-200 ${active ? "text-foreground" : ""}`}
+        animate={active ? { scale: [1, 1.1, 1] } : {}}
+        transition={{ duration: 0.3 }}
+      >
         {item.icon}
-      </span>
+      </motion.span>
       <span
         className="truncate transition-all duration-200 ease-out whitespace-nowrap"
         style={{ opacity: collapsed ? 0 : 1, maxWidth: collapsed ? 0 : 200, overflow: "hidden" }}
       >
         {item.label}
       </span>
-    </button>
+    </motion.button>
   );
 
   if (collapsed && item.available) {
