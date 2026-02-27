@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { House, ImageIcon, Layers, Settings, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { House, ImageIcon, Sparkles, Settings, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { ROUTES } from "@/constants";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
@@ -99,10 +99,10 @@ export default function Sidebar() {
       available: true,
     },
     {
-      icon: <Layers className="w-4 h-4" />,
-      label: t("sidebar.comingSoon"),
-      route: null,
-      available: false,
+      icon: <Sparkles className="w-4 h-4" />,
+      label: t("optimize.title"),
+      route: ROUTES.OPTIMIZE,
+      available: true,
     },
   ];
 

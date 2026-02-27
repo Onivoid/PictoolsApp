@@ -77,6 +77,76 @@
             "noUpdater": "Auto-update not configured"
         }
     },
+    "optimize": {
+        "title": "Image Optimizer",
+        "subtitle": "Compress, resize and convert your images",
+        "presets": {
+            "label": "Presets",
+            "web": "Web",
+            "webDesc": "1920px max, optimized for web",
+            "mobile": "Mobile",
+            "mobileDesc": "750px max, mobile-friendly",
+            "thumbnail": "Thumbnail",
+            "thumbnailDesc": "300px max, small previews",
+            "social": "Social Media",
+            "socialDesc": "1200px max, Instagram/Facebook ready",
+            "print": "Print",
+            "printDesc": "Original size, high quality",
+            "custom": "Custom",
+            "customDesc": "Full manual control"
+        },
+        "format": {
+            "label": "Output Format",
+            "png": "PNG",
+            "jpeg": "JPEG",
+            "webp": "WebP",
+            "original": "Keep Original",
+            "recommended": "Recommended"
+        },
+        "quality": {
+            "label": "Quality",
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High",
+            "max": "Maximum",
+            "estimate": "Estimated size"
+        },
+        "resize": {
+            "label": "Resize",
+            "enable": "Enable resizing",
+            "width": "Width",
+            "height": "Height",
+            "lockRatio": "Lock aspect ratio",
+            "quickSizes": "Quick sizes"
+        },
+        "output": {
+            "label": "Output Options",
+            "naming": "File naming",
+            "suffix": "Add suffix",
+            "replace": "Replace original",
+            "customSuffix": "Custom suffix",
+            "folder": "Output folder"
+        },
+        "preview": {
+            "before": "Before",
+            "after": "After",
+            "compare": "Drag to compare"
+        },
+        "stats": {
+            "original": "Original",
+            "optimized": "Optimized",
+            "reduction": "Size reduction",
+            "dimensions": "Dimensions",
+            "filesSelected": "files selected"
+        },
+        "optimize": "Optimize",
+        "optimizing": "Optimizing…",
+        "status": {
+            "pending": "Pending",
+            "done": "Optimized",
+            "error": "Error"
+        }
+    },
     "updater": {
         "available": {
             "title": "Update Available",

@@ -4,6 +4,7 @@ export const APP_VERSION = __APP_VERSION__;
 export const ROUTES = {
     HOME: "/",
     CONVERT: "/convert",
+    OPTIMIZE: "/optimize",
     SETTINGS: "/settings",
 } as const;
 

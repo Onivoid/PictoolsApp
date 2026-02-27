@@ -77,6 +77,76 @@
             "noUpdater": "Mise à jour automatique non configurée"
         }
     },
+    "optimize": {
+        "title": "Optimiseur d'images",
+        "subtitle": "Compressez, redimensionnez et convertissez vos images",
+        "presets": {
+            "label": "Préréglages",
+            "web": "Web",
+            "webDesc": "1920px max, optimisé pour le web",
+            "mobile": "Mobile",
+            "mobileDesc": "750px max, adapté mobile",
+            "thumbnail": "Miniature",
+            "thumbnailDesc": "300px max, petites vignettes",
+            "social": "Réseaux sociaux",
+            "socialDesc": "1200px max, prêt Instagram/Facebook",
+            "print": "Impression",
+            "printDesc": "Taille originale, haute qualité",
+            "custom": "Personnalisé",
+            "customDesc": "Contrôle manuel complet"
+        },
+        "format": {
+            "label": "Format de sortie",
+            "png": "PNG",
+            "jpeg": "JPEG",
+            "webp": "WebP",
+            "original": "Garder l'original",
+            "recommended": "Recommandé"
+        },
+        "quality": {
+            "label": "Qualité",
+            "low": "Basse",
+            "medium": "Moyenne",
+            "high": "Haute",
+            "max": "Maximum",
+            "estimate": "Taille estimée"
+        },
+        "resize": {
+            "label": "Redimensionner",
+            "enable": "Activer le redimensionnement",
+            "width": "Largeur",
+            "height": "Hauteur",
+            "lockRatio": "Verrouiller le ratio",
+            "quickSizes": "Tailles rapides"
+        },
+        "output": {
+            "label": "Options de sortie",
+            "naming": "Nommage des fichiers",
+            "suffix": "Ajouter un suffixe",
+            "replace": "Remplacer l'original",
+            "customSuffix": "Suffixe personnalisé",
+            "folder": "Dossier de sortie"
+        },
+        "preview": {
+            "before": "Avant",
+            "after": "Après",
+            "compare": "Glisser pour comparer"
+        },
+        "stats": {
+            "original": "Original",
+            "optimized": "Optimisé",
+            "reduction": "Réduction de taille",
+            "dimensions": "Dimensions",
+            "filesSelected": "fichiers sélectionnés"
+        },
+        "optimize": "Optimiser",
+        "optimizing": "Optimisation…",
+        "status": {
+            "pending": "En attente",
+            "done": "Optimisé",
+            "error": "Erreur"
+        }
+    },
     "updater": {
         "available": {
             "title": "Mise à jour disponible",

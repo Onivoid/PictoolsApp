@@ -14,7 +14,9 @@ pub fn run() {
             greet,
             get_system_info,
             convert_images,
-            generate_app_icons
+            generate_app_icons,
+            optimize_images,
+            get_image_metadata
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

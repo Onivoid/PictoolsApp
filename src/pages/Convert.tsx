@@ -4,7 +4,7 @@ import { listen } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Upload, X, CheckCircle2, AlertCircle, Loader2, FolderOpen } from "lucide-react";
+import { Upload, X, CheckCircle2, AlertCircle, Loader2, FolderOpen, ImageIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { StaggerContainer, StaggerItem } from "@/components/animated";
@@ -217,6 +217,7 @@ export default function Convert() {
     <div className="flex flex-col h-full overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
       {/* Header */}
       <div className="flex items-center gap-3 px-6 py-4 border-b border-border shrink-0">
+        <ImageIcon className="w-5 h-5 text-primary" />
         <div>
           <h1 className="text-lg font-semibold text-foreground">{t("convert.title")}</h1>
           <p className="text-xs text-muted-foreground">{t("convert.subtitle")}</p>
