@@ -199,28 +199,38 @@ pub async fn optimize_images(
 
             // Encode with quality
             let mut buf = Cursor::new(Vec::new());
-            let encode_result = match output_format {
+            let encode_result: Result<(), image::ImageError> = match output_format {
                 ImageFormat::Jpeg => {
                     let encoder =
                         image::codecs::jpeg::JpegEncoder::new_with_quality(&mut buf, opts.quality);
                     processed_img.write_with_encoder(encoder)
                 }
                 ImageFormat::Png => {
-                    // PNG is lossless, but we can adjust compression level
-                    // Map quality (1-100) to compression level (0-9, inverted)
-                    let _compression_level = ((100 - opts.quality) as f32 / 100.0 * 9.0) as u8;
-                    // Note: image crate doesn't expose compression level directly in new API
+                    let compression_type = if opts.quality >= 90 {
+                        image::codecs::png::CompressionType::Fast
+                    } else if opts.quality >= 70 {
+                        image::codecs::png::CompressionType::Default
+                    } else {
+                        image::codecs::png::CompressionType::Best
+                    };
                     let encoder = image::codecs::png::PngEncoder::new_with_quality(
                         &mut buf,
-                        image::codecs::png::CompressionType::Default,
+                        compression_type,
                         image::codecs::png::FilterType::Adaptive,
                     );
                     processed_img.write_with_encoder(encoder)
                 }
-                ImageFormat::WebP => {
-                    // WebP with quality
-                    processed_img.write_to(&mut buf, output_format)
-                }
+                ImageFormat::WebP => match webp::Encoder::from_image(&processed_img) {
+                    Ok(encoder) => {
+                        let webp_data = encoder.encode(opts.quality as f32);
+                        buf.get_mut().extend_from_slice(&webp_data);
+                        Ok(())
+                    }
+                    Err(e) => Err(image::ImageError::IoError(std::io::Error::new(
+                        std::io::ErrorKind::Other,
+                        format!("WebP encoder error: {:?}", e),
+                    ))),
+                },
                 _ => processed_img.write_to(&mut buf, output_format),
             };
 
