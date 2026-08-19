@@ -7,9 +7,13 @@ on:
     workflow_dispatch:
         inputs:
             tag:
-                description: "Tag to release (e.g. v0.3.0)"
+                description: "Tag to release (e.g. v0.3.2)"
                 required: true
                 type: string
+            rebuild:
+                description: "Rebuild all platforms (off = publish only)"
+                type: boolean
+                default: false
 
 permissions:
     contents: write
@@ -29,6 +33,7 @@ env:
 jobs:
     build:
         name: ${{ matrix.name }}
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.rebuild }}
         runs-on: ${{ matrix.platform }}
         timeout-minutes: 25
         strategy:
@@ -71,8 +76,6 @@ jobs:
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v5
-              with:
-                  version: 10
 
             - name: Setup Node.js
               uses: actions/setup-node@v5
@@ -110,6 +113,7 @@ jobs:
     publish:
         name: Publish Release
         needs: build
+        if: ${{ always() && !cancelled() && (needs.build.result == 'success' || needs.build.result == 'skipped') }}
         runs-on: ubuntu-latest
         timeout-minutes: 5
         steps:
