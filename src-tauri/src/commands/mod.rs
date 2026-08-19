@@ -1,5 +1,6 @@
 pub mod app_icons;
 pub mod convert;
+pub mod encode;
 pub mod optimize;
 pub mod system;
 

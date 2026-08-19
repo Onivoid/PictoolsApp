@@ -6,4 +6,6 @@ export { useNotification } from "./useNotification";
 export { useTheme } from "./useTheme";
 export { useLanguage } from "./useLanguage";
 export { useUpdater } from "./useUpdater";
+export { useImageDrop, loadImageEntries } from "./useImageDrop";
+export type { ImageEntry, ImageMetadata, Orientation } from "./useImageDrop";
 export type { Language } from "./useLanguage";

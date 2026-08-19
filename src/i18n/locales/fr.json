@@ -25,24 +25,17 @@
     "convert": {
         "title": "Convertisseur d'images",
         "subtitle": "Convertissez des images en PNG, JPEG, WEBP ou ICO",
-        "outputFormat": "Format de sortie",
-        "icoSizes": "Tailles ICO",
-        "outputFolder": "Dossier de sortie",
         "chooseFolder": "Choisir un dossier…",
         "convert": "Convertir",
         "converting": "Conversion…",
         "openFolder": "Ouvrir le dossier",
-        "clearAll": "Tout effacer",
         "dropzone": {
             "idle": "Déposez des images ou cliquez pour parcourir",
             "dragging": "Déposez les images ici",
-            "hint": "PNG, JPEG, WEBP, BMP, GIF, TIFF supportés"
+            "hint": "PNG, JPEG, WEBP, BMP, GIF, TIFF",
+            "reading": "Lecture de {{count}} photo(s)…"
         },
         "status": {
-            "pending": "En attente",
-            "done": "converti",
-            "error": "erreur",
-            "errors": "erreurs",
             "file": "fichier",
             "files": "fichiers",
             "noResult": "Aucun résultat retourné"
@@ -57,16 +50,12 @@
     "settings": {
         "title": "Paramètres",
         "subtitle": "Gérez vos préférences",
-        "theme": {
-            "label": "Apparence",
-            "light": "Clair",
-            "dark": "Sombre",
-            "system": "Système"
-        },
         "language": {
             "label": "Langue",
             "en": "English",
-            "fr": "Français"
+            "fr": "Français",
+            "enCode": "EN",
+            "frCode": "FR"
         },
         "version": {
             "label": "Version",
@@ -78,73 +67,68 @@
         }
     },
     "optimize": {
-        "title": "Optimiseur d'images",
-        "subtitle": "Compressez, redimensionnez et convertissez vos images",
-        "presets": {
-            "label": "Préréglages",
-            "web": "Web",
-            "webDesc": "1920px max, optimisé pour le web",
-            "mobile": "Mobile",
-            "mobileDesc": "750px max, adapté mobile",
-            "thumbnail": "Miniature",
-            "thumbnailDesc": "300px max, petites vignettes",
-            "social": "Réseaux sociaux",
-            "socialDesc": "1200px max, prêt Instagram/Facebook",
-            "print": "Impression",
-            "printDesc": "Taille originale, haute qualité",
-            "custom": "Personnalisé",
-            "customDesc": "Contrôle manuel complet"
+        "title": "Pour le web",
+        "subtitle": "Portrait, paysage, carré : on prépare la série pour l’écran.",
+        "ready": "Prêt pour le web",
+        "preparing": "Préparation…",
+        "dropzone": {
+            "idle": "Déposez la série. On détecte portrait / paysage et on prépare le web.",
+            "dragging": "Déposez les images ici",
+            "hint": "JPEG, PNG, WebP, TIFF",
+            "add": "Ajouter",
+            "reading": "Lecture de {{count}} photo(s)…"
+        },
+        "plan": {
+            "photo": "{{count}} photo",
+            "photos": "{{count}} photos",
+            "landscape": "{{count}} paysage",
+            "landscapes": "{{count}} paysages",
+            "portrait": "{{count}} portrait",
+            "portraits": "{{count}} portraits",
+            "square": "{{count}} carré",
+            "squares": "{{count}} carrés",
+            "suffix": "suffixe _web",
+            "besideFiles": "à côté des fichiers",
+            "besideMixed": "chaque dossier d’origine",
+            "chooseFolder": "Choisir un dossier",
+            "clearFolder": "Enregistrer à côté des fichiers",
+            "advanced": "Avancé",
+            "alreadyWeb": "déjà aux bonnes dimensions",
+            "ceiling": "cible ≤ {{kib}} Ko",
+            "ceilingMixed": "plafond selon l’orientation",
+            "cap": "≤ {{kib}} Ko",
+            "custom": "taille personnalisée"
         },
         "format": {
             "label": "Format de sortie",
             "png": "PNG",
             "jpeg": "JPEG",
             "webp": "WebP",
-            "original": "Garder l'original",
-            "recommended": "Recommandé"
+            "original": "Garder l'original"
         },
-        "quality": {
-            "label": "Qualité",
-            "low": "Basse",
-            "medium": "Moyenne",
-            "high": "Haute",
-            "max": "Maximum",
-            "estimate": "Taille estimée"
+        "keep": {
+            "label": "Poids conservé",
+            "hint": "{{keep}} % du fichier, soit environ −{{cut}} %",
+            "hintKeep": "{{keep}} % du fichier original",
+            "pngHint": "PNG sans perte : la taille bouge peu. Passez en WebP ou JPEG pour viser un poids.",
+            "webHint": "WebP à qualité 78, plafond 300 / 220 / 200 Ko selon l’orientation."
         },
         "resize": {
             "label": "Redimensionner",
-            "enable": "Activer le redimensionnement",
             "width": "Largeur",
             "height": "Hauteur",
             "lockRatio": "Verrouiller le ratio",
-            "quickSizes": "Tailles rapides"
+            "webDefault": "Fit web automatique : 1920 / 1350 / 1080, sans recadrage."
         },
         "output": {
-            "label": "Options de sortie",
             "naming": "Nommage des fichiers",
             "suffix": "Ajouter un suffixe",
-            "replace": "Remplacer l'original",
-            "customSuffix": "Suffixe personnalisé",
-            "folder": "Dossier de sortie"
+            "replace": "Même nom dans le dossier de sortie"
         },
         "preview": {
             "before": "Avant",
             "after": "Après",
             "compare": "Glisser pour comparer"
-        },
-        "stats": {
-            "original": "Original",
-            "optimized": "Optimisé",
-            "reduction": "Réduction de taille",
-            "dimensions": "Dimensions",
-            "filesSelected": "fichiers sélectionnés"
-        },
-        "optimize": "Optimiser",
-        "optimizing": "Optimisation…",
-        "status": {
-            "pending": "En attente",
-            "done": "Optimisé",
-            "error": "Erreur"
         }
     },
     "updater": {
@@ -171,8 +155,6 @@
     },
     "appIcons": {
         "format": "App Icons",
-        "description": "Génère le pack d'icônes complet pour la distribution d'application (PNG, ICO, ICNS) selon les conventions de chaque plateforme.",
-        "files": "fichiers générés",
         "invoking": "Génération…",
         "invoke": "Générer"
     }

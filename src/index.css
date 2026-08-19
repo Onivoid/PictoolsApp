@@ -192,6 +192,19 @@
     animation: page-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Hallmark · pre-emit critique: P4 H5 E4 S5 R5 V4
+ * macrostructure: Stage+filmstrip · tone: utilitarian · theme: existing tokens
+ * genre: modern-minimal · enrichment: none
+ */
+
+@media (prefers-reduced-motion: reduce) {
+    .page-enter {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
+
 /* Sidebar collapse transition */
 .sidebar-transition {
     transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
