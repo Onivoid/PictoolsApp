@@ -25,24 +25,17 @@
     "convert": {
         "title": "Image Converter",
         "subtitle": "Convert images to PNG, JPEG, WEBP or ICO",
-        "outputFormat": "Output Format",
-        "icoSizes": "ICO Sizes",
-        "outputFolder": "Output Folder",
         "chooseFolder": "Choose folder…",
         "convert": "Convert",
         "converting": "Converting…",
-        "openFolder": "Open Folder",
-        "clearAll": "Clear all",
+        "openFolder": "Open folder",
         "dropzone": {
             "idle": "Drop images or click to browse",
             "dragging": "Drop images here",
-            "hint": "PNG, JPEG, WEBP, BMP, GIF, TIFF supported"
+            "hint": "PNG, JPEG, WEBP, BMP, GIF, TIFF",
+            "reading": "Reading {{count}} photo(s)…"
         },
         "status": {
-            "pending": "Pending",
-            "done": "done",
-            "error": "error",
-            "errors": "errors",
             "file": "file",
             "files": "files",
             "noResult": "No result returned"
@@ -57,16 +50,12 @@
     "settings": {
         "title": "Settings",
         "subtitle": "Manage your preferences",
-        "theme": {
-            "label": "Appearance",
-            "light": "Light",
-            "dark": "Dark",
-            "system": "System"
-        },
         "language": {
             "label": "Language",
             "en": "English",
-            "fr": "Français"
+            "fr": "Français",
+            "enCode": "EN",
+            "frCode": "FR"
         },
         "version": {
             "label": "Version",
@@ -78,73 +67,68 @@
         }
     },
     "optimize": {
-        "title": "Image Optimizer",
-        "subtitle": "Compress, resize and convert your images",
-        "presets": {
-            "label": "Presets",
-            "web": "Web",
-            "webDesc": "1920px max, optimized for web",
-            "mobile": "Mobile",
-            "mobileDesc": "750px max, mobile-friendly",
-            "thumbnail": "Thumbnail",
-            "thumbnailDesc": "300px max, small previews",
-            "social": "Social Media",
-            "socialDesc": "1200px max, Instagram/Facebook ready",
-            "print": "Print",
-            "printDesc": "Original size, high quality",
-            "custom": "Custom",
-            "customDesc": "Full manual control"
+        "title": "For the web",
+        "subtitle": "Portrait, landscape, square: we prepare the set for the screen.",
+        "ready": "Ready for the web",
+        "preparing": "Preparing…",
+        "dropzone": {
+            "idle": "Drop the set. We detect portrait / landscape and prepare them for the web.",
+            "dragging": "Drop images here",
+            "hint": "JPEG, PNG, WebP, TIFF",
+            "add": "Add",
+            "reading": "Reading {{count}} photo(s)…"
+        },
+        "plan": {
+            "photo": "{{count}} photo",
+            "photos": "{{count}} photos",
+            "landscape": "{{count}} landscape",
+            "landscapes": "{{count}} landscapes",
+            "portrait": "{{count}} portrait",
+            "portraits": "{{count}} portraits",
+            "square": "{{count}} square",
+            "squares": "{{count}} squares",
+            "suffix": "_web suffix",
+            "besideFiles": "next to the files",
+            "besideMixed": "each original folder",
+            "chooseFolder": "Choose a folder",
+            "clearFolder": "Save next to the files",
+            "advanced": "Advanced",
+            "alreadyWeb": "already web-sized",
+            "ceiling": "target ≤ {{kib}} KB",
+            "ceilingMixed": "cap by orientation",
+            "cap": "≤ {{kib}} KB",
+            "custom": "custom size"
         },
         "format": {
             "label": "Output Format",
             "png": "PNG",
             "jpeg": "JPEG",
             "webp": "WebP",
-            "original": "Keep Original",
-            "recommended": "Recommended"
+            "original": "Keep Original"
         },
-        "quality": {
-            "label": "Quality",
-            "low": "Low",
-            "medium": "Medium",
-            "high": "High",
-            "max": "Maximum",
-            "estimate": "Estimated size"
+        "keep": {
+            "label": "Kept file size",
+            "hint": "{{keep}}% of the original, about −{{cut}}%",
+            "hintKeep": "{{keep}}% of the original file",
+            "pngHint": "Lossless PNG: size barely changes. Switch to WebP or JPEG to hit a target size.",
+            "webHint": "WebP at quality 78, capped at 300 / 220 / 200 KB by orientation."
         },
         "resize": {
             "label": "Resize",
-            "enable": "Enable resizing",
             "width": "Width",
             "height": "Height",
             "lockRatio": "Lock aspect ratio",
-            "quickSizes": "Quick sizes"
+            "webDefault": "Automatic web fit: 1920 / 1350 / 1080, no crop."
         },
         "output": {
-            "label": "Output Options",
             "naming": "File naming",
-            "suffix": "Add suffix",
-            "replace": "Replace original",
-            "customSuffix": "Custom suffix",
-            "folder": "Output folder"
+            "suffix": "Add a suffix",
+            "replace": "Same name in the output folder"
         },
         "preview": {
             "before": "Before",
             "after": "After",
             "compare": "Drag to compare"
-        },
-        "stats": {
-            "original": "Original",
-            "optimized": "Optimized",
-            "reduction": "Size reduction",
-            "dimensions": "Dimensions",
-            "filesSelected": "files selected"
-        },
-        "optimize": "Optimize",
-        "optimizing": "Optimizing…",
-        "status": {
-            "pending": "Pending",
-            "done": "Optimized",
-            "error": "Error"
         }
     },
     "updater": {
@@ -171,8 +155,6 @@
     },
     "appIcons": {
         "format": "App Icons",
-        "description": "Generate the full icon set for app distribution (PNG, ICO, ICNS) following platform conventions.",
-        "files": "files generated",
         "invoking": "Generating…",
         "invoke": "Generate"
     }

@@ -1,158 +1,147 @@
-import { useState, useRef, useCallback, useEffect } from "react";
-import { invoke, convertFileSrc } from "@tauri-apps/api/core";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Upload, X, CheckCircle2, AlertCircle, Loader2, FolderOpen, Sparkles, Lock, Unlock } from "lucide-react";
+import { ChevronDown, Loader2, Lock, Sparkles, Unlock } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { motion, AnimatePresence } from "framer-motion";
+import {
+  BeforeAfterCompare,
+  FileDropzone,
+  FileQueue,
+  ToolDock,
+  ToolWorkbench,
+  type QueueFile,
+} from "@/components/workbench";
+import { loadImageEntries, useImageDrop, type Orientation } from "@/composables";
+import { formatBytes } from "@/utils/format";
 
 type OutputFormat = "png" | "jpeg" | "webp" | "original";
-type PresetType = "web" | "mobile" | "thumbnail" | "social" | "print" | "custom";
 type OutputNaming = "suffix" | "replace";
 
-interface OptimizeFileEntry {
-  id: string;
-  path: string;
-  name: string;
-  status: "pending" | "optimizing" | "done" | "error";
-  originalSize: number;
+interface OptimizeFile extends QueueFile {
   originalDimensions: { width: number; height: number };
-  optimizedSize?: number;
-  optimizedDimensions?: { width: number; height: number };
-  reduction?: number;
+  format: string;
+  orientation: Orientation;
+  webWidth: number;
+  webHeight: number;
   outputPath?: string;
-  error?: string;
 }
 
 interface OptimizeResult {
   input: string;
   output: string | null;
-  original_size: number;
-  optimized_size: number;
-  original_dimensions: [number, number];
-  optimized_dimensions: [number, number];
-  reduction_percent: number;
+  originalSize: number;
+  optimizedSize: number;
   error: string | null;
-}
-
-interface ImageMetadata {
-  width: number;
-  height: number;
-  size: number;
-  format: string;
 }
 
 const ACCEPTED_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "bmp", "gif", "tiff", "tif"];
 
-const PRESETS = {
-  web: { maxSize: 1920, quality: 85, format: "original" as OutputFormat },
-  mobile: { maxSize: 750, quality: 80, format: "jpeg" as OutputFormat },
-  thumbnail: { maxSize: 300, quality: 75, format: "jpeg" as OutputFormat },
-  social: { maxSize: 1200, quality: 90, format: "jpeg" as OutputFormat },
-  print: { maxSize: null, quality: 95, format: "png" as OutputFormat },
-  custom: { maxSize: null, quality: 85, format: "original" as OutputFormat },
+const WEB_CEILING_KIB: Record<Orientation, number> = {
+  landscape: 300,
+  portrait: 220,
+  square: 200,
 };
+
+const CHIP =
+  "py-1.5 px-2.5 rounded-md text-xs font-medium cursor-pointer transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-ring";
+const CHIP_ON = "bg-primary text-primary-foreground";
+const CHIP_OFF = "bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground border border-border/60";
+
+function parentFolder(path: string): string {
+  return path.replace(/[\\/][^\\/]+$/, "") || path;
+}
+
+function formatName(format: OutputFormat): string {
+  if (format === "original") return "original";
+  if (format === "jpeg") return "JPEG";
+  if (format === "png") return "PNG";
+  return "WebP";
+}
+
+function fileNameFromPath(path: string): string {
+  return path.split(/[\\/]/).pop() ?? path;
+}
 
 export default function Optimize() {
   const { t } = useTranslation();
-  const [files, setFiles] = useState<OptimizeFileEntry[]>([]);
-  const [selectedPreset, setSelectedPreset] = useState<PresetType>("web");
-  const [outputFormat, setOutputFormat] = useState<OutputFormat>("original");
-  const [quality, setQuality] = useState(85);
+  const [files, setFiles] = useState<OptimizeFile[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>("webp");
+  const [keepPercent, setKeepPercent] = useState(80);
   const [resizeEnabled, setResizeEnabled] = useState(false);
   const [targetWidth, setTargetWidth] = useState<number | null>(null);
   const [targetHeight, setTargetHeight] = useState<number | null>(null);
   const [lockRatio, setLockRatio] = useState(true);
   const [outputNaming, setOutputNaming] = useState<OutputNaming>("suffix");
-  const [customSuffix, setCustomSuffix] = useState("_optimized");
-  const [outputDir, setOutputDir] = useState<string>("");
-  const [isDragging, setIsDragging] = useState(false);
+  const [customSuffix, setCustomSuffix] = useState("_web");
+  const [outputDir, setOutputDir] = useState("");
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
-  const dropRef = useRef<HTMLDivElement>(null);
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [detectCount, setDetectCount] = useState(0);
+
+  const selectedFile = files.find((file) => file.id === selectedId) ?? files[0] ?? null;
+  const useWebProfile = !resizeEnabled;
+
+  const addPaths = useCallback(async (paths: string[]) => {
+    let toAdd: string[] = [];
+    setFiles((prev) => {
+      const existing = new Set(prev.map((file) => file.path));
+      toAdd = paths.filter((path) => !existing.has(path));
+      if (toAdd.length === 0) return prev;
+      const placeholders: OptimizeFile[] = toAdd.map((path) => ({
+        id: crypto.randomUUID(),
+        path,
+        name: fileNameFromPath(path),
+        status: "pending",
+        originalSize: 0,
+        originalDimensions: { width: 0, height: 0 },
+        format: "",
+        orientation: "landscape",
+        webWidth: 0,
+        webHeight: 0,
+      }));
+      return [...prev, ...placeholders];
+    });
+    if (toAdd.length === 0) return;
+
+    setIsDetecting(true);
+    setDetectCount(toAdd.length);
+    try {
+      const entries = await loadImageEntries(toAdd);
+      const byPath = new Map(entries.map((entry) => [entry.path, entry]));
+      setFiles((prev) =>
+        prev.flatMap((file) => {
+          if (!toAdd.includes(file.path)) return [file];
+          const entry = byPath.get(file.path);
+          if (!entry) return [];
+          return [
+            {
+              ...file,
+              originalSize: entry.size,
+              originalDimensions: { width: entry.width, height: entry.height },
+              format: entry.format,
+              orientation: entry.orientation,
+              webWidth: entry.webWidth,
+              webHeight: entry.webHeight,
+            },
+          ];
+        })
+      );
+    } finally {
+      setIsDetecting(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let unlisten: (() => void) | undefined;
-    listen<[number, string]>("optimize:progress", (event) => {
-      const [pct, filePath] = event.payload;
-      setFiles((prev) =>
-        prev.map((f) =>
-          f.path === filePath ? { ...f, status: pct === 100 ? "done" : "optimizing" } : f
-        )
-      );
-    }).then((fn) => {
-      unlisten = fn;
-    });
-    return () => {
-      if (unlisten) unlisten();
-    };
-  }, []);
-
-  const applyPreset = useCallback((preset: PresetType) => {
-    setSelectedPreset(preset);
-    const config = PRESETS[preset];
-    setQuality(config.quality);
-    setOutputFormat(config.format);
-
-    if (config.maxSize && files.length > 0) {
-      setResizeEnabled(true);
-      const firstFile = files[0];
-      const ratio = firstFile.originalDimensions.width / firstFile.originalDimensions.height;
-      if (firstFile.originalDimensions.width > config.maxSize) {
-        setTargetWidth(config.maxSize);
-        setTargetHeight(Math.round(config.maxSize / ratio));
-      }
-    } else {
-      setResizeEnabled(false);
-      setTargetWidth(null);
-      setTargetHeight(null);
+    if (!selectedId && files.length > 0) {
+      setSelectedId(files[0].id);
     }
-  }, [files]);
+  }, [files, selectedId]);
 
-  const addFiles = useCallback(async (paths: string[]) => {
-    const validPaths = paths.filter((p) => {
-      const ext = p.split(".").pop()?.toLowerCase() ?? "";
-      return ACCEPTED_EXTENSIONS.includes(ext);
-    });
-
-    const newEntries: OptimizeFileEntry[] = [];
-    for (const path of validPaths) {
-      try {
-        const metadata: ImageMetadata = await invoke("get_image_metadata", { filePath: path });
-        newEntries.push({
-          id: crypto.randomUUID(),
-          path,
-          name: path.split(/[\\/]/).pop() ?? path,
-          status: "pending",
-          originalSize: metadata.size,
-          originalDimensions: { width: metadata.width, height: metadata.height },
-        });
-      } catch (error) {
-        console.error("Error getting metadata:", error);
-      }
-    }
-
-    if (newEntries.length > 0) {
-      setFiles((prev) => {
-        const existingPaths = new Set(prev.map((f) => f.path));
-        const filtered = newEntries.filter((e) => !existingPaths.has(e.path));
-        console.log("Adding files:", filtered.length, "new files");
-        console.log("Total files after:", prev.length + filtered.length);
-        return [...prev, ...filtered];
-      });
-    }
-  }, []);
-
-  const handleBrowse = async () => {
-    const selected = await open({
-      multiple: true,
-      filters: [{ name: "Images", extensions: ACCEPTED_EXTENSIONS }],
-    });
-    if (selected) {
-      const paths = Array.isArray(selected) ? selected : [selected];
-      addFiles(paths);
-    }
-  };
+  const { isDragging, dropRef, handleBrowse, handleDragOver, handleDragLeave, handleDrop } =
+    useImageDrop(ACCEPTED_EXTENSIONS, addPaths);
 
   const handleSelectOutputDir = async () => {
     const dir = await open({ directory: true, multiple: false });
@@ -160,444 +149,434 @@ export default function Optimize() {
   };
 
   useEffect(() => {
-    const win = getCurrentWindow();
     let unlisten: (() => void) | undefined;
-
-    win.onDragDropEvent((event) => {
-      if (event.payload.type === "drop") {
-        setIsDragging(false);
-        const paths: string[] = (event.payload as any).paths ?? [];
-        if (paths.length) addFiles(paths);
-      } else if (event.payload.type === "leave") {
-        setIsDragging(false);
-      }
+    listen<[number, string]>("optimize:progress", (event) => {
+      const [, filePath] = event.payload;
+      setFiles((prev) =>
+        prev.map((file) =>
+          file.path === filePath ? { ...file, status: "processing" } : file
+        )
+      );
     }).then((fn) => {
       unlisten = fn;
     });
+    return () => unlisten?.();
+  }, []);
 
-    return () => {
-      if (unlisten) unlisten();
-    };
-  }, [addFiles]);
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-  const handleDragLeave = (e: React.DragEvent) => {
-    if (!dropRef.current?.contains(e.relatedTarget as Node)) setIsDragging(false);
-  };
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const removeFile = (id: string) => {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
-  };
+  const options = useMemo(
+    () => ({
+      outputFormat,
+      keepPercent,
+      maxSide: null,
+      resizeWidth: resizeEnabled ? targetWidth : null,
+      resizeHeight: resizeEnabled ? targetHeight : null,
+      lockRatio,
+      outputNaming,
+      customSuffix,
+      profile: useWebProfile ? "web" : null,
+    }),
+    [
+      outputFormat,
+      keepPercent,
+      resizeEnabled,
+      targetWidth,
+      targetHeight,
+      lockRatio,
+      outputNaming,
+      customSuffix,
+      useWebProfile,
+    ]
+  );
 
   const handleOptimize = async () => {
-    if (!files.length || !outputDir) return;
+    if (!files.length || isDetecting) return;
     setIsOptimizing(true);
+    setFiles((prev) => prev.map((file) => ({ ...file, status: "processing" as const })));
 
     try {
-      const results: OptimizeResult[] = await invoke("optimize_images", {
-        files: files.map((f) => f.path),
-        options: {
-          output_format: outputFormat,
-          quality,
-          resize_width: resizeEnabled ? targetWidth : null,
-          resize_height: resizeEnabled ? targetHeight : null,
-          output_naming: outputNaming,
-          custom_suffix: customSuffix,
-        },
+      const results = await invoke<OptimizeResult[]>("optimize_images", {
+        files: files.map((file) => file.path),
+        options,
         outputDir,
       });
 
       setFiles((prev) =>
-        prev.map((f) => {
-          const result = results.find((r) => r.input === f.path);
-          if (!result) return f;
-
+        prev.map((file) => {
+          const result = results.find((item) => item.input === file.path);
+          if (!result) return { ...file, status: "error" as const, error: t("convert.status.noResult") };
           return {
-            ...f,
+            ...file,
             status: result.error ? "error" : "done",
-            optimizedSize: result.optimized_size,
-            optimizedDimensions: {
-              width: result.optimized_dimensions[0],
-              height: result.optimized_dimensions[1],
-            },
-            reduction: result.reduction_percent,
+            originalSize: result.originalSize,
+            outputSize: result.optimizedSize,
             outputPath: result.output ?? undefined,
             error: result.error ?? undefined,
           };
         })
       );
     } catch (error) {
-      console.error("Optimization error:", error);
-      setFiles((prev) => prev.map((f) => ({ ...f, status: "error", error: String(error) })));
+      setFiles((prev) =>
+        prev.map((file) => ({ ...file, status: "error" as const, error: String(error) }))
+      );
     } finally {
       setIsOptimizing(false);
     }
   };
 
-  const pendingCount = files.filter((f) => f.status === "pending").length;
-  const canOptimize = files.length > 0 && outputDir && !isOptimizing && pendingCount > 0;
-
-  const formatBytes = (bytes: number) => {
-    if (bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`;
+  const removeFile = (id: string) => {
+    setFiles((prev) => {
+      const next = prev.filter((file) => file.id !== id);
+      if (selectedId === id) setSelectedId(next[0]?.id ?? null);
+      return next;
+    });
   };
 
+  const landscapeCount = files.filter((file) => file.orientation === "landscape" && file.webWidth > 0).length;
+  const portraitCount = files.filter((file) => file.orientation === "portrait").length;
+  const squareCount = files.filter((file) => file.orientation === "square").length;
+  const uniqueFolders = new Set(files.map((file) => parentFolder(file.path)));
+  const canOptimize = files.length > 0 && !isOptimizing && !isDetecting;
+  const selectedIsPng =
+    outputFormat === "png" ||
+    (outputFormat === "original" && selectedFile?.format.toLowerCase() === "png");
+  const beforeSrc = selectedFile ? convertFileSrc(selectedFile.path) : null;
+  const afterSrc =
+    selectedFile?.status === "done" && selectedFile.outputPath
+      ? convertFileSrc(selectedFile.outputPath)
+      : null;
+  const cutPercent = 100 - keepPercent;
+  const hasDone = files.some((file) => file.status === "done");
+  const hasError = files.some((file) => file.status === "error") && !isOptimizing;
+
+  const ceilingLabel = (() => {
+    const kinds = [
+      landscapeCount > 0 ? "landscape" : null,
+      portraitCount > 0 ? "portrait" : null,
+      squareCount > 0 ? "square" : null,
+    ].filter(Boolean) as Orientation[];
+    if (kinds.length === 1) {
+      return t("optimize.plan.ceiling", { kib: WEB_CEILING_KIB[kinds[0]] });
+    }
+    return t("optimize.plan.ceilingMixed");
+  })();
+
+  const sizeLabel = selectedFile
+    ? selectedFile.outputSize != null
+      ? `${formatBytes(selectedFile.originalSize ?? 0)} → ${formatBytes(selectedFile.outputSize)}`
+      : selectedFile.originalSize
+        ? `${formatBytes(selectedFile.originalSize)} → ${t("optimize.plan.cap", {
+            kib: WEB_CEILING_KIB[selectedFile.orientation],
+          })}`
+        : null
+    : null;
+
+  const queueFiles = files.map((file) => {
+    const ready = file.webWidth > 0;
+    const sameSize =
+      ready &&
+      file.originalDimensions.width === file.webWidth &&
+      file.originalDimensions.height === file.webHeight;
+    const dims = !ready
+      ? "…"
+      : sameSize
+        ? t("optimize.plan.alreadyWeb")
+        : `${file.webWidth}×${file.webHeight}`;
+    const ceiling = ready ? t("optimize.plan.cap", { kib: WEB_CEILING_KIB[file.orientation] }) : "";
+    return {
+      ...file,
+      detail: ceiling ? `${dims} · ${ceiling}` : dims,
+    };
+  });
+
+  const destination = outputDir
+    ? outputDir.split(/[\\/]/).pop()
+    : uniqueFolders.size > 1
+      ? t("optimize.plan.besideMixed")
+      : t("optimize.plan.besideFiles");
+
+  const empty = files.length === 0;
+
   return (
-    <div className="flex flex-col h-full overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-border shrink-0">
-        <Sparkles className="w-5 h-5 text-primary" />
-        <div>
-          <h1 className="text-lg font-semibold text-foreground">{t("optimize.title")}</h1>
-          <p className="text-xs text-muted-foreground">{t("optimize.subtitle")}</p>
-        </div>
-      </div>
-
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left panel — settings */}
-        <div className="w-80 border-r border-border flex flex-col gap-5 p-5 shrink-0 overflow-y-auto">
-          {/* Presets */}
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {t("optimize.presets.label")}
-            </span>
-            <div className="grid grid-cols-2 gap-1.5">
-              {(["web", "mobile", "thumbnail", "social", "print"] as PresetType[]).map((preset) => (
-                <button
-                  key={preset}
-                  onClick={() => applyPreset(preset)}
-                  className={`py-1.5 rounded-lg text-xs font-medium transition-colors ${selectedPreset === preset
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    }`}
-                >
-                  {t(`optimize.presets.${preset}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Custom Section */}
-          <div className="flex flex-col gap-3 p-3 rounded-lg border border-border bg-muted/30">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t("optimize.presets.custom")}
-              </span>
-              <button
-                onClick={() => setSelectedPreset("custom")}
-                className={`px-2 py-1 text-xs rounded ${selectedPreset === "custom"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background text-muted-foreground hover:text-foreground"
-                  }`}
-              >
-                {selectedPreset === "custom" ? "Active" : "Activer"}
-              </button>
-            </div>
-
-            {/* Format Selector */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium text-foreground">{t("optimize.format.label")}</span>
-              <div className="grid grid-cols-2 gap-1.5">
-                {(["original", "png", "jpeg", "webp"] as OutputFormat[]).map((format) => (
-                  <button
-                    key={format}
-                    onClick={() => setOutputFormat(format)}
-                    disabled={selectedPreset !== "custom"}
-                    className={`py-1.5 rounded text-xs font-medium transition-colors disabled:opacity-50 ${outputFormat === format
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                      }`}
-                  >
-                    {t(`optimize.format.${format}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Quality Slider */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-foreground">{t("optimize.quality.label")}</span>
-                <span className="text-xs font-mono text-muted-foreground">{quality}</span>
-              </div>
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={quality}
-                onChange={(e) => setQuality(Number(e.target.value))}
-                disabled={selectedPreset !== "custom"}
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer disabled:opacity-50 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
-              />
-              <div className="flex justify-between text-[10px] text-muted-foreground">
-                <span>{t("optimize.quality.low")}</span>
-                <span>{t("optimize.quality.high")}</span>
-              </div>
-            </div>
-
-            {/* Resize Toggle */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-foreground">{t("optimize.resize.label")}</span>
-                <button
-                  onClick={() => setResizeEnabled(!resizeEnabled)}
-                  disabled={selectedPreset !== "custom"}
-                  className={`relative w-10 h-5 rounded-full transition-colors disabled:opacity-50 ${resizeEnabled ? "bg-primary" : "bg-muted"
-                    }`}
-                >
-                  <span
-                    className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${resizeEnabled ? "translate-x-5" : "translate-x-0"
-                      }`}
-                  />
-                </button>
-              </div>
-
-              {resizeEnabled && (
-                <div className="flex flex-col gap-2 pl-2 border-l-2 border-primary/30">
-                  <div className="flex items-center gap-1.5">
-                    <input
-                      type="number"
-                      placeholder="W"
-                      value={targetWidth ?? ""}
-                      onChange={(e) => {
-                        const val = e.target.value ? Number(e.target.value) : null;
-                        setTargetWidth(val);
-                        if (lockRatio && val && files.length > 0) {
-                          const ratio = files[0].originalDimensions.width / files[0].originalDimensions.height;
-                          setTargetHeight(Math.round(val / ratio));
-                        }
-                      }}
-                      disabled={selectedPreset !== "custom"}
-                      className="w-16 px-1.5 py-1 text-xs rounded border border-border bg-background disabled:opacity-50"
-                    />
-                    <button
-                      onClick={() => setLockRatio(!lockRatio)}
-                      disabled={selectedPreset !== "custom"}
-                      className="p-1 hover:bg-muted rounded disabled:opacity-50 shrink-0"
-                      title={lockRatio ? "Déverrouiller le ratio" : "Verrouiller le ratio"}
-                    >
-                      {lockRatio ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
-                    </button>
-                    <input
-                      type="number"
-                      placeholder="H"
-                      value={targetHeight ?? ""}
-                      onChange={(e) => {
-                        const val = e.target.value ? Number(e.target.value) : null;
-                        setTargetHeight(val);
-                        if (lockRatio && val && files.length > 0) {
-                          const ratio = files[0].originalDimensions.width / files[0].originalDimensions.height;
-                          setTargetWidth(Math.round(val * ratio));
-                        }
-                      }}
-                      disabled={selectedPreset !== "custom"}
-                      className="w-16 px-1.5 py-1 text-xs rounded border border-border bg-background disabled:opacity-50"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Output Naming */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium text-foreground">{t("optimize.output.naming")}</span>
-              <div className="flex flex-col gap-1.5">
-                <label className="flex items-center gap-2 text-xs cursor-pointer">
-                  <input
-                    type="radio"
-                    name="naming"
-                    checked={outputNaming === "suffix"}
-                    onChange={() => setOutputNaming("suffix")}
-                    disabled={selectedPreset !== "custom"}
-                    className="disabled:opacity-50"
-                  />
-                  <span>{t("optimize.output.suffix")}</span>
-                </label>
-                {outputNaming === "suffix" && (
-                  <input
-                    type="text"
-                    value={customSuffix}
-                    onChange={(e) => setCustomSuffix(e.target.value)}
-                    disabled={selectedPreset !== "custom"}
-                    placeholder="_optimized"
-                    className="ml-5 px-2 py-1 text-xs rounded border border-border bg-background disabled:opacity-50"
-                  />
-                )}
-                <label className="flex items-center gap-2 text-xs cursor-pointer">
-                  <input
-                    type="radio"
-                    name="naming"
-                    checked={outputNaming === "replace"}
-                    onChange={() => setOutputNaming("replace")}
-                    disabled={selectedPreset !== "custom"}
-                    className="disabled:opacity-50"
-                  />
-                  <span>{t("optimize.output.replace")}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Output folder */}
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {t("optimize.output.folder")}
-            </span>
-            <button
-              onClick={handleSelectOutputDir}
-              className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
-            >
-              <FolderOpen className="w-4 h-4" />
-              <span className="truncate flex-1 text-left">
-                {outputDir || t("convert.chooseFolder")}
-              </span>
-            </button>
-          </div>
-
-          {/* Optimize button */}
-          <button
-            onClick={handleOptimize}
-            disabled={!canOptimize}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isOptimizing ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                {t("optimize.optimizing")}
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                {t("optimize.optimize")}
-              </>
-            )}
-          </button>
-
-          {files.length > 0 && (
-            <div className="text-xs text-muted-foreground text-center">
-              {files.length} {t("optimize.stats.filesSelected")}
-            </div>
-          )}
-        </div>
-
-        {/* Main area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {files.length === 0 ? (
-            <div
-              ref={dropRef}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={handleBrowse}
-              className={`flex-1 flex flex-col items-center justify-center gap-4 m-6 border-2 border-dashed rounded-lg cursor-pointer transition-all ${isDragging
-                ? "border-primary bg-primary/5 scale-[0.98]"
-                : "border-border hover:border-primary/50 hover:bg-muted/30"
-                }`}
-            >
-              <motion.div
-                animate={isDragging ? { scale: 1.1, rotate: 5 } : { scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Upload className="w-12 h-12 text-muted-foreground" />
-              </motion.div>
-              <div className="text-center">
-                <p className="text-sm font-medium text-foreground">
-                  {isDragging ? t("convert.dropzone.dragging") : t("convert.dropzone.idle")}
+    <ToolWorkbench
+      icon={<Sparkles className="w-5 h-5" />}
+      title={t("optimize.title")}
+      subtitle={t("optimize.subtitle")}
+      isDragging={isDragging}
+      draggingLabel={t("optimize.dropzone.dragging")}
+      busy={isDetecting}
+      busyLabel={t("optimize.dropzone.reading", { count: detectCount })}
+      dropRef={dropRef}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      stage={
+        empty ? (
+          <FileDropzone
+            isDragging={isDragging}
+            idleLabel={t("optimize.dropzone.idle")}
+            draggingLabel={t("optimize.dropzone.dragging")}
+            hint={t("optimize.dropzone.hint")}
+            onBrowse={handleBrowse}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          />
+        ) : (
+          <BeforeAfterCompare
+            key={selectedFile?.id ?? "none"}
+            beforeSrc={beforeSrc}
+            afterSrc={afterSrc}
+            beforeLabel={t("optimize.preview.before")}
+            afterLabel={t("optimize.preview.after")}
+            compareHint={t("optimize.preview.compare")}
+            sizeLabel={sizeLabel}
+          />
+        )
+      }
+      dock={
+        empty ? undefined : (
+          <ToolDock
+            summary={
+              <div className="min-w-0">
+                <p className="text-sm text-foreground leading-snug">
+                  {t(files.length === 1 ? "optimize.plan.photo" : "optimize.plan.photos", {
+                    count: files.length,
+                  })}
+                  {landscapeCount > 0
+                    ? ` · ${t(
+                        landscapeCount === 1 ? "optimize.plan.landscape" : "optimize.plan.landscapes",
+                        { count: landscapeCount }
+                      )}`
+                    : ""}
+                  {portraitCount > 0
+                    ? ` · ${t(
+                        portraitCount === 1 ? "optimize.plan.portrait" : "optimize.plan.portraits",
+                        { count: portraitCount }
+                      )}`
+                    : ""}
+                  {squareCount > 0
+                    ? ` · ${t(squareCount === 1 ? "optimize.plan.square" : "optimize.plan.squares", {
+                        count: squareCount,
+                      })}`
+                    : ""}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">{t("convert.dropzone.hint")}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="flex-1 overflow-y-auto p-6">
-              {/* Add more images button */}
-              <div className="mb-4">
+                <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                  {formatName(outputFormat)} · {useWebProfile ? ceilingLabel : t("optimize.plan.custom")} ·{" "}
+                  {t("optimize.plan.suffix")} · {destination}
+                </p>
                 <button
-                  onClick={handleBrowse}
-                  className="flex items-center gap-2 px-4 py-2 text-sm rounded-lg border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/30 transition-colors"
+                  type="button"
+                  onClick={outputDir ? () => setOutputDir("") : handleSelectOutputDir}
+                  className="mt-1 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
                 >
-                  <Upload className="w-4 h-4" />
-                  <span>{t("convert.dropzone.idle")}</span>
+                  {outputDir ? t("optimize.plan.clearFolder") : t("optimize.plan.chooseFolder")}
                 </button>
               </div>
+            }
+            secondary={
+              <button
+                type="button"
+                onClick={() => setAdvancedOpen((isOpen) => !isOpen)}
+                className="inline-flex items-center gap-1 whitespace-nowrap px-3 py-2 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150 cursor-pointer focus-visible:outline-2 focus-visible:outline-ring"
+                aria-expanded={advancedOpen}
+              >
+                {t("optimize.plan.advanced")}
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${advancedOpen ? "rotate-180" : ""}`} />
+              </button>
+            }
+            primary={
+              <button
+                type="button"
+                onClick={handleOptimize}
+                disabled={!canOptimize}
+                data-state={isOptimizing ? "loading" : hasError ? "error" : hasDone ? "success" : "default"}
+                className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 whitespace-nowrap px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:-translate-y-[1.5px] hover:bg-primary/90 active:translate-y-px focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 motion-reduce:transform-none transition-[color,opacity,transform] duration-150 cursor-pointer data-[state=error]:bg-destructive data-[state=success]:bg-primary"
+              >
+                {isOptimizing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {t("optimize.preparing")}
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    {t("optimize.ready")}
+                  </>
+                )}
+              </button>
+            }
+            advancedOpen={advancedOpen}
+            advanced={
+              <div className="grid gap-3 md:grid-cols-3 min-w-0">
+                <section className="rounded-md border border-border/60 bg-background p-3 flex flex-col gap-3 min-w-0">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    {t("optimize.format.label")}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(["webp", "jpeg", "png", "original"] as const).map((format) => (
+                      <button
+                        key={format}
+                        type="button"
+                        onClick={() => setOutputFormat(format)}
+                        className={`${CHIP} ${outputFormat === format ? CHIP_ON : CHIP_OFF}`}
+                      >
+                        {t(`optimize.format.${format}`)}
+                      </button>
+                    ))}
+                  </div>
+                  {useWebProfile && (
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {t("optimize.keep.webHint")}
+                    </p>
+                  )}
+                </section>
 
-              <AnimatePresence mode="popLayout">
-                {files.map((file) => (
-                  <motion.div
-                    key={file.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex items-center gap-4 p-4 bg-card border border-border rounded-lg mb-3"
-                  >
-                    {/* Thumbnail */}
-                    <div className="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center">
-                      <img
-                        src={convertFileSrc(file.path)}
-                        alt={file.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
+                <section className="rounded-md border border-border/60 bg-background p-3 flex flex-col gap-3 min-w-0">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    {t("optimize.output.naming")}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setOutputNaming("suffix")}
+                      className={`${CHIP} ${outputNaming === "suffix" ? CHIP_ON : CHIP_OFF}`}
+                    >
+                      {t("optimize.output.suffix")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOutputNaming("replace")}
+                      className={`${CHIP} ${outputNaming === "replace" ? CHIP_ON : CHIP_OFF}`}
+                    >
+                      {t("optimize.output.replace")}
+                    </button>
+                  </div>
+                  {outputNaming === "suffix" && (
+                    <input
+                      type="text"
+                      value={customSuffix}
+                      onChange={(event) => setCustomSuffix(event.target.value)}
+                      placeholder="_web"
+                      className="w-full px-2 py-1.5 text-xs rounded-md border border-border bg-background focus-visible:outline-2 focus-visible:outline-ring"
+                    />
+                  )}
+                </section>
+
+                <section className="rounded-md border border-border/60 bg-background p-3 flex flex-col gap-3 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                      {t("optimize.resize.label")}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setResizeEnabled((value) => !value)}
+                      className={`relative w-10 h-5 rounded-full transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-ring ${
+                        resizeEnabled ? "bg-primary" : "bg-muted"
+                      }`}
+                      aria-pressed={resizeEnabled}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
+                          resizeEnabled ? "translate-x-5" : "translate-x-0"
+                        }`}
                       />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium text-foreground truncate">
-                          {file.name}
-                        </span>
-                        {file.status === "done" && <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />}
-                        {file.status === "error" && <AlertCircle className="w-4 h-4 text-destructive shrink-0" />}
-                        {file.status === "optimizing" && <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />}
+                    </button>
+                  </div>
+                  {resizeEnabled ? (
+                    <>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="number"
+                          placeholder={t("optimize.resize.width")}
+                          value={targetWidth ?? ""}
+                          onChange={(event) => {
+                            const value = event.target.value ? Number(event.target.value) : null;
+                            setTargetWidth(value);
+                            if (lockRatio && value && selectedFile) {
+                              const ratio =
+                                selectedFile.originalDimensions.width /
+                                selectedFile.originalDimensions.height;
+                              setTargetHeight(Math.round(value / ratio));
+                            }
+                          }}
+                          className="min-w-0 flex-1 px-2 py-1.5 text-xs rounded-md border border-border bg-background"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setLockRatio((value) => !value)}
+                          className="p-1.5 hover:bg-muted rounded-md cursor-pointer focus-visible:outline-2 focus-visible:outline-ring"
+                          title={t("optimize.resize.lockRatio")}
+                        >
+                          {lockRatio ? (
+                            <Lock className="w-3.5 h-3.5" />
+                          ) : (
+                            <Unlock className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                        <input
+                          type="number"
+                          placeholder={t("optimize.resize.height")}
+                          value={targetHeight ?? ""}
+                          onChange={(event) => {
+                            const value = event.target.value ? Number(event.target.value) : null;
+                            setTargetHeight(value);
+                            if (lockRatio && value && selectedFile) {
+                              const ratio =
+                                selectedFile.originalDimensions.width /
+                                selectedFile.originalDimensions.height;
+                              setTargetWidth(Math.round(value * ratio));
+                            }
+                          }}
+                          className="min-w-0 flex-1 px-2 py-1.5 text-xs rounded-md border border-border bg-background"
+                        />
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                        <div>
-                          <span className="font-medium">{t("optimize.stats.original")}:</span>{" "}
-                          {file.originalDimensions.width}×{file.originalDimensions.height} •{" "}
-                          {formatBytes(file.originalSize)}
+                      <div className="flex flex-col gap-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] text-muted-foreground">{t("optimize.keep.label")}</span>
+                          <span className="text-[11px] font-mono text-foreground">{keepPercent}%</span>
                         </div>
-                        {file.optimizedSize && file.optimizedDimensions && (
-                          <div>
-                            <span className="font-medium">{t("optimize.stats.optimized")}:</span>{" "}
-                            {file.optimizedDimensions.width}×{file.optimizedDimensions.height} •{" "}
-                            {formatBytes(file.optimizedSize)}
-                          </div>
+                        <input
+                          type="range"
+                          min={10}
+                          max={100}
+                          value={keepPercent}
+                          onChange={(event) => setKeepPercent(Number(event.target.value))}
+                          className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary focus-visible:outline-2 focus-visible:outline-ring"
+                        />
+                        <p className="text-[11px] text-muted-foreground">
+                          {keepPercent === 100
+                            ? t("optimize.keep.hintKeep", { keep: keepPercent })
+                            : t("optimize.keep.hint", { keep: keepPercent, cut: cutPercent })}
+                        </p>
+                        {selectedIsPng && (
+                          <p className="text-[11px] text-muted-foreground">{t("optimize.keep.pngHint")}</p>
                         )}
                       </div>
-                      {file.reduction !== undefined && (
-                        <div className="mt-2">
-                          <span className={`text-xs font-medium ${file.reduction > 50 ? "text-green-500" : file.reduction > 20 ? "text-orange-500" : "text-muted-foreground"}`}>
-                            {t("optimize.stats.reduction")}: {file.reduction.toFixed(1)}%
-                          </span>
-                        </div>
-                      )}
-                      {file.error && (
-                        <div className="mt-2 text-xs text-destructive">{file.error}</div>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => removeFile(file.id)}
-                      className="p-2 hover:bg-muted rounded-lg transition-colors shrink-0"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+                    </>
+                  ) : (
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {t("optimize.resize.webDefault")}
+                    </p>
+                  )}
+                </section>
+              </div>
+            }
+          />
+        )
+      }
+      strip={
+        empty ? undefined : (
+          <FileQueue
+            files={queueFiles}
+            selectedId={selectedFile?.id ?? null}
+            onSelect={setSelectedId}
+            onRemove={removeFile}
+            disabled={isOptimizing || isDetecting}
+            onAdd={handleBrowse}
+            addLabel={t("optimize.dropzone.add")}
+          />
+        )
+      }
+    />
   );
 }
