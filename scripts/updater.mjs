@@ -28,7 +28,7 @@ if (!GITHUB_TOKEN) {
 const pkg = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf8"));
 const version = pkg.version;
 
-const repoMatch = process.env.GITHUB_REPOSITORY || "Onivoid/Tauri-React-Boilerplate";
+const repoMatch = process.env.GITHUB_REPOSITORY || "Onivoid/PictoolsApp";
 const [owner, repo] = repoMatch.split("/");
 
 const baseUrl = "https://api.github.com";
@@ -100,6 +100,13 @@ function findAsset(assets, predicate) {
     return assets.find(predicate) ?? null;
 }
 
+function darwinPlatformKey(filename) {
+    const lower = filename.toLowerCase();
+    if (lower.includes("aarch64")) return "darwin-aarch64";
+    if (lower.includes("x86_64") || lower.includes("x64")) return "darwin-x86_64";
+    return "darwin-universal";
+}
+
 async function main() {
     console.log(`Generating latest.json for ${tag} (v${version})`);
 
@@ -136,8 +143,9 @@ async function main() {
                 url: downloadUrl,
             };
         } else if (name.endsWith(".app.tar.gz.sig")) {
-            console.log(`  macOS universal: ${archiveName}`);
-            platforms["darwin-universal"] = {
+            const key = darwinPlatformKey(name);
+            console.log(`  macOS ${key}: ${archiveName}`);
+            platforms[key] = {
                 signature: signature.trim(),
                 url: downloadUrl,
             };
