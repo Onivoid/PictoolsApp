@@ -26,7 +26,7 @@ if (!GITHUB_TOKEN) {
 }
 
 const pkg = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf8"));
-const version = pkg.version;
+const version = tag.replace(/^v/, "") || pkg.version;
 
 const repoMatch = process.env.GITHUB_REPOSITORY || "Onivoid/PictoolsApp";
 const [owner, repo] = repoMatch.split("/");
@@ -134,7 +134,7 @@ async function main() {
         }
 
         const signature = await getAssetContent(asset);
-        const downloadUrl = archiveAsset.browser_download_url;
+        const downloadUrl = `https://github.com/${owner}/${repo}/releases/download/${tag}/${archiveName}`;
 
         if (name.endsWith(".AppImage.sig")) {
             console.log(`  Linux x86_64: ${archiveName}`);
@@ -168,6 +168,10 @@ async function main() {
                 };
             }
         }
+    }
+
+    if (platforms["darwin-aarch64"] && !platforms["darwin-universal"]) {
+        platforms["darwin-universal"] = platforms["darwin-aarch64"];
     }
 
     if (Object.keys(platforms).length === 0) {
