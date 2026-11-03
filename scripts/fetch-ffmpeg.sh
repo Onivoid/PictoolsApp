@@ -50,28 +50,18 @@ download_windows() {
 
 download_linux() {
   local triple="$1"
-  local zip_name
+  local arch url
   case "$triple" in
-    x86_64-unknown-linux-gnu) zip_name="ffmpeg-n7.1-latest-linux64-gpl-7.1.tar.xz" ;;
-    aarch64-unknown-linux-gnu) zip_name="ffmpeg-n7.1-latest-linuxarm64-gpl-7.1.tar.xz" ;;
+    x86_64-unknown-linux-gnu) arch="linux-x64" ;;
+    aarch64-unknown-linux-gnu) arch="linux-arm64" ;;
     *)
       echo "Unsupported Linux triple: $triple" >&2
       return 1
       ;;
   esac
-  local tmp
-  tmp="$(mktemp -d)"
+  url="https://github.com/eugeneware/ffmpeg-static/releases/download/${FFMPEG_STATIC_TAG}/ffmpeg-${arch}.gz"
   echo "→ Linux FFmpeg for ${triple}"
-  curl -fsSL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/${zip_name}" -o "$tmp/ffmpeg.tar.xz"
-  tar -xJf "$tmp/ffmpeg.tar.xz" -C "$tmp"
-  local bin
-  bin="$(find "$tmp" -type f -path '*/bin/ffmpeg' | head -n 1)"
-  if [[ -z "$bin" ]]; then
-    echo "  ✗ ffmpeg not found in archive" >&2
-    exit 1
-  fi
-  install -m 755 "$bin" "$BIN_DIR/ffmpeg-${triple}"
-  rm -rf "$tmp"
+  download_gzip_binary "$url" "$BIN_DIR/ffmpeg-${triple}"
   echo "  ✓ $BIN_DIR/ffmpeg-${triple}"
 }
 
@@ -95,12 +85,16 @@ fetch_one() {
 }
 
 main() {
-  if [[ "${1:-}" == "--all" ]]; then
+  local arg="${1:-}"
+  if [[ "$arg" == "--all" ]]; then
     fetch_one aarch64-apple-darwin
     fetch_one x86_64-apple-darwin
     fetch_one x86_64-pc-windows-msvc
     fetch_one x86_64-unknown-linux-gnu
     fetch_one aarch64-unknown-linux-gnu
+  elif [[ -n "$arg" ]]; then
+    # Explicit triple for CI / cross builds (e.g. x86_64-apple-darwin on arm64 runners)
+    fetch_one "$arg"
   else
     fetch_one "$(host_triple)"
   fi

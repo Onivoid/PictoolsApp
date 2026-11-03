@@ -43,16 +43,20 @@ jobs:
                     - name: macOS (arm64)
                       platform: macos-latest
                       rust-targets: aarch64-apple-darwin
+                      ffmpeg-triple: aarch64-apple-darwin
                       args: "--target aarch64-apple-darwin"
                     - name: macOS (x86_64)
                       platform: macos-latest
                       rust-targets: x86_64-apple-darwin
+                      ffmpeg-triple: x86_64-apple-darwin
                       args: "--target x86_64-apple-darwin"
                     - name: Linux (x86_64)
                       platform: ubuntu-22.04
+                      ffmpeg-triple: x86_64-unknown-linux-gnu
                       args: "--bundles appimage,deb"
                     - name: Windows (x86_64)
                       platform: windows-latest
+                      ffmpeg-triple: x86_64-pc-windows-msvc
                       args: "--bundles nsis"
 
         steps:
@@ -96,6 +100,10 @@ jobs:
 
             - name: Install frontend dependencies
               run: pnpm install --frozen-lockfile
+
+            - name: Fetch FFmpeg sidecar
+              shell: bash
+              run: ./scripts/fetch-ffmpeg.sh "${{ matrix.ffmpeg-triple }}"
 
             - uses: tauri-apps/tauri-action@v1
               env:

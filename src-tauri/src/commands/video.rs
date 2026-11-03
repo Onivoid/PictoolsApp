@@ -425,7 +425,7 @@ async fn encode_one(
         match event {
             CommandEvent::Stdout(line) => {
                 let text = String::from_utf8_lossy(&line);
-                for part in text.split(|c| c == '\n' || c == '\r') {
+                for part in text.split(['\n', '\r']) {
                     if let Some(secs) = parse_out_time_secs(part) {
                         if let Some(duration) = duration_hint.filter(|d| *d > 0.0) {
                             let percent = ((secs / duration) * 100.0).clamp(0.0, 99.0) as u32;
