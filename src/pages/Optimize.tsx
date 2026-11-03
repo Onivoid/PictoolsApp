@@ -8,11 +8,13 @@ import {
   BeforeAfterCompare,
   FileDropzone,
   FileQueue,
+  FormatChip,
   ToolDock,
   ToolWorkbench,
   type QueueFile,
 } from "@/components/workbench";
 import { loadImageEntries, useImageDrop, type Orientation } from "@/composables";
+import { ACCEPTED_IMAGE_EXTENSIONS } from "@/constants";
 import { formatBytes } from "@/utils/format";
 
 type OutputFormat = "png" | "jpeg" | "webp" | "original";
@@ -35,18 +37,11 @@ interface OptimizeResult {
   error: string | null;
 }
 
-const ACCEPTED_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "bmp", "gif", "tiff", "tif"];
-
 const WEB_CEILING_KIB: Record<Orientation, number> = {
   landscape: 300,
   portrait: 220,
   square: 200,
 };
-
-const CHIP =
-  "py-1.5 px-2.5 rounded-md text-xs font-medium cursor-pointer transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-ring";
-const CHIP_ON = "bg-primary text-primary-foreground";
-const CHIP_OFF = "bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground border border-border/60";
 
 function parentFolder(path: string): string {
   return path.replace(/[\\/][^\\/]+$/, "") || path;
@@ -141,7 +136,7 @@ export default function Optimize() {
   }, [files, selectedId]);
 
   const { isDragging, dropRef, handleBrowse, handleDragOver, handleDragLeave, handleDrop } =
-    useImageDrop(ACCEPTED_EXTENSIONS, addPaths);
+    useImageDrop([...ACCEPTED_IMAGE_EXTENSIONS], addPaths);
 
   const handleSelectOutputDir = async () => {
     const dir = await open({ directory: true, multiple: false });
@@ -414,14 +409,13 @@ export default function Optimize() {
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {(["webp", "jpeg", "png", "original"] as const).map((format) => (
-                      <button
+                      <FormatChip
                         key={format}
-                        type="button"
+                        selected={outputFormat === format}
                         onClick={() => setOutputFormat(format)}
-                        className={`${CHIP} ${outputFormat === format ? CHIP_ON : CHIP_OFF}`}
                       >
                         {t(`optimize.format.${format}`)}
-                      </button>
+                      </FormatChip>
                     ))}
                   </div>
                   {useWebProfile && (
@@ -436,20 +430,18 @@ export default function Optimize() {
                     {t("optimize.output.naming")}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
-                    <button
-                      type="button"
+                    <FormatChip
+                      selected={outputNaming === "suffix"}
                       onClick={() => setOutputNaming("suffix")}
-                      className={`${CHIP} ${outputNaming === "suffix" ? CHIP_ON : CHIP_OFF}`}
                     >
                       {t("optimize.output.suffix")}
-                    </button>
-                    <button
-                      type="button"
+                    </FormatChip>
+                    <FormatChip
+                      selected={outputNaming === "replace"}
                       onClick={() => setOutputNaming("replace")}
-                      className={`${CHIP} ${outputNaming === "replace" ? CHIP_ON : CHIP_OFF}`}
                     >
                       {t("optimize.output.replace")}
-                    </button>
+                    </FormatChip>
                   </div>
                   {outputNaming === "suffix" && (
                     <input

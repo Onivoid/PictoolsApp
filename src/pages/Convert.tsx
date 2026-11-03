@@ -9,11 +9,13 @@ import {
   BeforeAfterCompare,
   FileDropzone,
   FileQueue,
+  FormatChip,
   ToolDock,
   ToolWorkbench,
   type QueueFile,
 } from "@/components/workbench";
 import { loadImageEntries, useImageDrop } from "@/composables";
+import { ACCEPTED_CONVERT_EXTENSIONS } from "@/constants";
 import { formatBytes } from "@/utils/format";
 
 type TargetFormat = "png" | "jpeg" | "webp" | "ico" | "appicons";
@@ -37,7 +39,6 @@ interface AppIconsResult {
 }
 
 const ICO_SIZES = [16, 32, 48, 64, 128, 256];
-const ACCEPTED_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "bmp", "gif", "tiff", "tif", "ico"];
 const FORMATS: { label: string; value: TargetFormat; special?: boolean }[] = [
   { label: "PNG", value: "png" },
   { label: "JPEG", value: "jpeg" },
@@ -107,7 +108,7 @@ export default function Convert() {
   }, [files, selectedId]);
 
   const { isDragging, dropRef, handleBrowse, handleDragOver, handleDragLeave, handleDrop } =
-    useImageDrop(ACCEPTED_EXTENSIONS, addPaths);
+    useImageDrop([...ACCEPTED_CONVERT_EXTENSIONS], addPaths);
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;
@@ -239,30 +240,21 @@ export default function Convert() {
   const formatButtons = (
     <div className="flex flex-wrap gap-1.5">
       {FORMATS.filter((format) => !format.special).map((format) => (
-        <button
+        <FormatChip
           key={format.value}
-          type="button"
+          selected={targetFormat === format.value}
           onClick={() => setTargetFormat(format.value)}
-          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-ring ${
-            targetFormat === format.value
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-          }`}
         >
           {format.label}
-        </button>
+        </FormatChip>
       ))}
-      <button
-        type="button"
+      <FormatChip
+        variant="accent"
+        selected={targetFormat === "appicons"}
         onClick={() => setTargetFormat("appicons")}
-        className={`px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors border focus-visible:outline-2 focus-visible:outline-ring ${
-          targetFormat === "appicons"
-            ? "bg-primary/10 border-primary text-primary"
-            : "bg-muted border-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-        }`}
       >
         {t("appIcons.format")}
-      </button>
+      </FormatChip>
     </div>
   );
 

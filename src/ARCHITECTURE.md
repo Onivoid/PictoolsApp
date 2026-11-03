@@ -15,7 +15,10 @@ src/
 │
 ├── components/         # Reusable components
 │   ├── ui/            # UI components (shadcn/ui)
-│   └── ...            # Your custom components
+│   ├── workbench/     # Shared tool chrome (ToolWorkbench, FormatChip, FileQueue…)
+│   └── ...            # Shell components (Sidebar, TopBar…)
+
+Design authority for agents: PRODUCT.md + DESIGN.md at the repo root (Impeccable).
 │
 ├── composables/        # Custom hooks (Nuxt-style composables)
 │   ├── useLocalStorage.ts   # localStorage persistence
