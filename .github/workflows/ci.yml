@@ -67,6 +67,10 @@ jobs:
                     librsvg2-dev \
                     patchelf
 
+            # Tauri build.rs requires the host externalBin sidecar to exist.
+            - name: Fetch FFmpeg sidecar
+              run: ./scripts/fetch-ffmpeg.sh x86_64-unknown-linux-gnu
+
             - name: Test
               working-directory: src-tauri
               run: cargo test

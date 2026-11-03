@@ -23,4 +23,7 @@ Fetch a specific target (GitHub Actions release matrix):
 
 Pass `--all` to download every supported target.
 
-Binaries are gitignored — they are GPL-licensed and large. The Release workflow runs `scripts/fetch-ffmpeg.sh` per platform before `tauri-action` bundles the sidecar.
+Binaries are gitignored — they are GPL-licensed and large.
+
+- **CI** (`.github/workflows/ci.yml`): fetches the Linux sidecar before `cargo test` / Clippy — Tauri’s build script fails if the host `externalBin` is missing.
+- **Release** (`.github/workflows/release.yml`): fetches the matching sidecar per OS/arch before `tauri-action` bundles it.
