@@ -71,7 +71,9 @@ export function FileQueue({
                         preload="metadata"
                         playsInline
                       />
-                      <Film className="absolute bottom-1 left-1 w-3.5 h-3.5 text-primary-foreground drop-shadow" />
+                      <span className="absolute bottom-1 left-1 inline-flex items-center justify-center rounded bg-background/85 p-0.5 text-foreground border border-border/60">
+                        <Film className="w-3 h-3" />
+                      </span>
                     </>
                   ) : (
                     <img

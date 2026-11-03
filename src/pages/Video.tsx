@@ -287,6 +287,7 @@ export default function Video() {
               })
           : t("video.readingLabel", { count: detectCount })
       }
+      busyProgress={isProcessing ? progressPercent : null}
       dropRef={dropRef}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -304,16 +305,25 @@ export default function Video() {
             onDrop={handleDrop}
           />
         ) : (
-          <div className="relative flex h-full min-h-0 w-full items-center justify-center bg-muted/30">
+          <div className="relative flex h-full min-h-0 w-full flex-col items-center justify-center bg-muted/30">
+            {selectedFile?.status === "error" && selectedFile.error ? (
+              <p
+                role="alert"
+                className="absolute top-3 left-1/2 z-[1] max-w-[min(36rem,90%)] -translate-x-1/2 rounded-md border border-destructive/40 bg-background/95 px-3 py-2 text-xs text-destructive text-center"
+              >
+                {selectedFile.error}
+              </p>
+            ) : null}
             {previewSrc ? (
               <video
                 key={previewSrc}
                 src={previewSrc}
                 controls
                 className="max-h-full max-w-full object-contain"
+                aria-label={selectedFile?.name}
               />
             ) : null}
-            {sizeLabel && (
+            {sizeLabel && selectedFile?.status !== "error" && (
               <p className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-md bg-background/85 px-2.5 py-1 text-xs font-mono text-muted-foreground border border-border/60">
                 {sizeLabel}
               </p>
@@ -377,6 +387,7 @@ export default function Video() {
                       <FormatChip
                         key={format}
                         selected={outputFormat === format}
+                        disabled={isProcessing}
                         onClick={() => setOutputFormat(format)}
                       >
                         {format.toUpperCase()}
@@ -394,6 +405,7 @@ export default function Video() {
                       <FormatChip
                         key={value}
                         selected={preset === value}
+                        disabled={isProcessing}
                         onClick={() => setPreset(value)}
                       >
                         {t(`video.preset.${value}`)}
@@ -412,12 +424,14 @@ export default function Video() {
                   <div className="flex flex-wrap gap-1.5">
                     <FormatChip
                       selected={outputNaming === "suffix"}
+                      disabled={isProcessing}
                       onClick={() => setOutputNaming("suffix")}
                     >
                       {t("video.output.suffix")}
                     </FormatChip>
                     <FormatChip
                       selected={outputNaming === "replace"}
+                      disabled={isProcessing}
                       onClick={() => setOutputNaming("replace")}
                     >
                       {t("video.output.replace")}
@@ -429,7 +443,9 @@ export default function Video() {
                       value={customSuffix}
                       onChange={(event) => setCustomSuffix(event.target.value)}
                       placeholder="_compressed"
-                      className="w-full rounded-md border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+                      disabled={isProcessing}
+                      aria-label={t("video.output.suffix")}
+                      className="w-full rounded-md border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50"
                     />
                   )}
                 </section>
