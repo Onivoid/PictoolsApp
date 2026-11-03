@@ -1,5 +1,5 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { AlertCircle, CheckCircle2, Loader2, Plus, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, Film, Loader2, Plus, X } from "lucide-react";
 import { formatBytes } from "@/utils/format";
 
 export type QueueStatus = "pending" | "processing" | "done" | "error";
@@ -23,6 +23,7 @@ interface FileQueueProps {
   disabled?: boolean;
   onAdd?: () => void;
   addLabel?: string;
+  media?: "image" | "video";
 }
 
 export function FileQueue({
@@ -33,6 +34,7 @@ export function FileQueue({
   disabled = false,
   onAdd,
   addLabel,
+  media = "image",
 }: FileQueueProps) {
   if (files.length === 0) return null;
 
@@ -60,12 +62,25 @@ export function FileQueue({
                 }`}
               >
                 <div className="relative w-full aspect-[4/3] rounded overflow-hidden bg-muted border border-border min-w-0">
-                  <img
-                    src={convertFileSrc(file.path)}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                  {media === "video" ? (
+                    <>
+                      <video
+                        src={convertFileSrc(file.path)}
+                        className="w-full h-full object-cover"
+                        muted
+                        preload="metadata"
+                        playsInline
+                      />
+                      <Film className="absolute bottom-1 left-1 w-3.5 h-3.5 text-primary-foreground drop-shadow" />
+                    </>
+                  ) : (
+                    <img
+                      src={convertFileSrc(file.path)}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  )}
                   <div className="absolute top-0.5 right-0.5 flex items-center gap-0.5">
                     {file.status === "processing" && (
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-primary drop-shadow" />

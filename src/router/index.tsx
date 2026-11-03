@@ -3,6 +3,7 @@ import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home";
 import Convert from "@/pages/Convert";
 import Optimize from "@/pages/Optimize";
+import Video from "@/pages/Video";
 import Settings from "@/pages/Settings";
 
 export const router = createMemoryRouter([
@@ -21,6 +22,10 @@ export const router = createMemoryRouter([
       {
         path: "optimize",
         element: <Optimize />,
+      },
+      {
+        path: "video",
+        element: <Video />,
       },
       {
         path: "settings",

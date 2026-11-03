@@ -131,6 +131,51 @@
             "compare": "Drag to compare"
         }
     },
+    "video": {
+        "title": "Video",
+        "subtitle": "Compress or convert videos with simple presets",
+        "run": "Compress",
+        "processing": "Processing…",
+        "processingLabel": "Encoding {{file}}… {{percent}}%",
+        "dropzone": {
+            "idle": "Drop videos or click to browse",
+            "dragging": "Drop videos here",
+            "hint": "MP4, MOV, MKV, WebM, AVI, M4V",
+            "add": "Add",
+            "reading": "Reading {{count}} video(s)…"
+        },
+        "plan": {
+            "file": "{{count}} video",
+            "files": "{{count}} videos",
+            "suffix": "suffix _compressed",
+            "besideFiles": "next to the files",
+            "besideMixed": "each original folder",
+            "chooseFolder": "Choose a folder",
+            "clearFolder": "Save next to the files"
+        },
+        "format": {
+            "label": "Output format"
+        },
+        "preset": {
+            "label": "Compression",
+            "light": "Light",
+            "balanced": "Balanced",
+            "quality": "Quality",
+            "hint": {
+                "light": "Smaller file, stronger compression, capped around 1280px wide.",
+                "balanced": "Good size/quality trade-off, capped around 1920px wide.",
+                "quality": "Higher fidelity, keeps the original resolution."
+            }
+        },
+        "output": {
+            "naming": "File naming",
+            "suffix": "Add a suffix",
+            "replace": "Same name in the output folder"
+        },
+        "meta": {
+            "unknownDims": "size unknown"
+        }
+    },
     "updater": {
         "available": {
             "title": "Update Available",

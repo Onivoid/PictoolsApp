@@ -131,6 +131,51 @@
             "compare": "Glisser pour comparer"
         }
     },
+    "video": {
+        "title": "Vidéo",
+        "subtitle": "Compresser ou convertir des vidéos avec des presets simples",
+        "run": "Compresser",
+        "processing": "Traitement…",
+        "processingLabel": "Encodage de {{file}}… {{percent}} %",
+        "dropzone": {
+            "idle": "Déposez des vidéos ou cliquez pour parcourir",
+            "dragging": "Déposez les vidéos ici",
+            "hint": "MP4, MOV, MKV, WebM, AVI, M4V",
+            "add": "Ajouter",
+            "reading": "Lecture de {{count}} vidéo(s)…"
+        },
+        "plan": {
+            "file": "{{count}} vidéo",
+            "files": "{{count}} vidéos",
+            "suffix": "suffixe _compressed",
+            "besideFiles": "à côté des fichiers",
+            "besideMixed": "chaque dossier d’origine",
+            "chooseFolder": "Choisir un dossier",
+            "clearFolder": "Enregistrer à côté des fichiers"
+        },
+        "format": {
+            "label": "Format de sortie"
+        },
+        "preset": {
+            "label": "Compression",
+            "light": "Léger",
+            "balanced": "Équilibré",
+            "quality": "Qualité",
+            "hint": {
+                "light": "Fichier plus petit, compression forte, plafonné vers 1280 px de large.",
+                "balanced": "Bon compromis poids/qualité, plafonné vers 1920 px de large.",
+                "quality": "Fidélité plus haute, conserve la résolution d’origine."
+            }
+        },
+        "output": {
+            "naming": "Nommage des fichiers",
+            "suffix": "Ajouter un suffixe",
+            "replace": "Même nom dans le dossier de sortie"
+        },
+        "meta": {
+            "unknownDims": "taille inconnue"
+        }
+    },
     "updater": {
         "available": {
             "title": "Mise à jour disponible",
