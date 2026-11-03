@@ -18,7 +18,9 @@ pub fn run() {
             convert_images,
             generate_app_icons,
             optimize_images,
-            get_images_metadata
+            get_images_metadata,
+            get_videos_metadata,
+            process_videos
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
