@@ -1,10 +1,5 @@
 import type { DragEvent, ReactNode, Ref } from "react";
 
-/* Hallmark · pre-emit critique: P4 H5 E4 S5 R5 V4
- * macrostructure: Stage+filmstrip · tone: utilitarian · theme: existing tokens
- * genre: modern-minimal · enrichment: none
- */
-
 interface ToolWorkbenchProps {
   icon: ReactNode;
   title: string;
