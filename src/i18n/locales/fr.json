@@ -133,47 +133,54 @@
     },
     "video": {
         "title": "Vidéo",
-        "subtitle": "Compresser ou convertir des vidéos avec des presets simples",
-        "run": "Compresser",
-        "processing": "Traitement…",
-        "processingLabel": "Encodage de {{file}}… {{percent}} %",
+        "subtitle": "Compresser et convertir — les originaux restent intacts",
+        "run": "Traiter les vidéos",
+        "processing": "En cours…",
+        "processingLabel": "Encodage de {{file}} ({{percent}} %)",
+        "processingLabelIndeterminate": "Encodage de {{file}}…",
+        "readingLabel": "Lecture de {{count}} vidéo(s)…",
         "dropzone": {
-            "idle": "Déposez des vidéos ou cliquez pour parcourir",
-            "dragging": "Déposez les vidéos ici",
-            "hint": "MP4, MOV, MKV, WebM, AVI, M4V",
-            "add": "Ajouter",
+            "idle": "Déposez des vidéos ici, ou parcourez pour les ajouter",
+            "dragging": "Relâchez pour ajouter ces vidéos",
+            "hint": "MP4, MOV, MKV, WebM, AVI, M4V · choisissez un preset et un format ci-dessous",
+            "add": "Ajouter des vidéos",
             "reading": "Lecture de {{count}} vidéo(s)…"
         },
         "plan": {
-            "file": "{{count}} vidéo",
-            "files": "{{count}} vidéos",
-            "suffix": "suffixe _compressed",
-            "besideFiles": "à côté des fichiers",
-            "besideMixed": "chaque dossier d’origine",
-            "chooseFolder": "Choisir un dossier",
-            "clearFolder": "Enregistrer à côté des fichiers"
+            "file": "{{count}} vidéo prête",
+            "files": "{{count}} vidéos prêtes",
+            "suffix": "écrit à côté des sources avec un suffixe",
+            "besideFiles": "enregistré à côté des originaux",
+            "besideMixed": "enregistré dans chaque dossier d’origine",
+            "chooseFolder": "Choisir un dossier de sortie…",
+            "clearFolder": "Enregistrer plutôt à côté des originaux"
         },
         "format": {
             "label": "Format de sortie"
         },
         "preset": {
-            "label": "Compression",
-            "light": "Léger",
+            "label": "Poids vs qualité",
+            "light": "Plus léger",
             "balanced": "Équilibré",
-            "quality": "Qualité",
+            "quality": "Plus de qualité",
             "hint": {
-                "light": "Fichier plus petit, compression forte, plafonné vers 1280 px de large.",
-                "balanced": "Bon compromis poids/qualité, plafonné vers 1920 px de large.",
-                "quality": "Fidélité plus haute, conserve la résolution d’origine."
+                "light": "Compression plus forte. Largeur plafonnée vers 1280 px.",
+                "balanced": "Compromis par défaut. Largeur plafonnée vers 1920 px.",
+                "quality": "Compression plus douce. Conserve la résolution d’origine."
             }
         },
         "output": {
-            "naming": "Nommage des fichiers",
+            "naming": "Noms de sortie",
             "suffix": "Ajouter un suffixe",
             "replace": "Même nom dans le dossier de sortie"
         },
         "meta": {
-            "unknownDims": "taille inconnue"
+            "unknownDims": "dimensions inconnues"
+        },
+        "errors": {
+            "sidecar": "FFmpeg manque dans ce build. Lancez scripts/fetch-ffmpeg.sh, puis reconstruisez.",
+            "failed": "Impossible de traiter cette vidéo. Essayez un autre format ou preset.",
+            "generic": "Une erreur est survenue pendant l’encodage."
         }
     },
     "updater": {

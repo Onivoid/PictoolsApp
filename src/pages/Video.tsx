@@ -59,6 +59,21 @@ function formatDuration(secs: number | null): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
+function humanizeVideoError(raw: string, t: (key: string) => string): string {
+  const lower = raw.toLowerCase();
+  if (
+    lower.includes("sidecar unavailable") ||
+    lower.includes("failed to spawn ffmpeg") ||
+    lower.includes("no such file")
+  ) {
+    return t("video.errors.sidecar");
+  }
+  if (lower.includes("ffmpeg")) {
+    return t("video.errors.failed");
+  }
+  return raw.trim() || t("video.errors.generic");
+}
+
 export default function Video() {
   const { t } = useTranslation();
   const [files, setFiles] = useState<VideoFile[]>([]);
@@ -184,7 +199,7 @@ export default function Video() {
         prev.map((file) => {
           const result = results.find((item) => item.input === file.path);
           if (!result) {
-            return { ...file, status: "error" as const, error: t("convert.status.noResult") };
+            return { ...file, status: "error" as const, error: t("video.errors.generic") };
           }
           return {
             ...file,
@@ -192,13 +207,14 @@ export default function Video() {
             originalSize: result.originalSize,
             outputSize: result.outputSize,
             outputPath: result.output ?? undefined,
-            error: result.error ?? undefined,
+            error: result.error ? humanizeVideoError(result.error, t) : undefined,
           };
         })
       );
     } catch (error) {
+      const message = humanizeVideoError(String(error), t);
       setFiles((prev) =>
-        prev.map((file) => ({ ...file, status: "error" as const, error: String(error) }))
+        prev.map((file) => ({ ...file, status: "error" as const, error: message }))
       );
     } finally {
       setIsProcessing(false);
@@ -261,11 +277,15 @@ export default function Video() {
       busy={isDetecting || isProcessing}
       busyLabel={
         isProcessing
-          ? t("video.processingLabel", {
-              file: progressFile ?? "",
-              percent: progressPercent ?? 0,
-            })
-          : t("video.dropzone.reading", { count: detectCount })
+          ? progressPercent != null
+            ? t("video.processingLabel", {
+                file: progressFile ?? "",
+                percent: progressPercent,
+              })
+            : t("video.processingLabelIndeterminate", {
+                file: progressFile ?? "",
+              })
+          : t("video.readingLabel", { count: detectCount })
       }
       dropRef={dropRef}
       onDragOver={handleDragOver}
