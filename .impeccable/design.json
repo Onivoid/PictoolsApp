@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-03T08:00:00.000Z",
+  "title": "Design System: PictoolsApp",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Workbench Violet",
+        "canonical": "oklch(59.01% 0.19675 278.523)",
+        "tonalRamp": [
+          "oklch(25% 0.12 278.523)",
+          "oklch(35% 0.15 278.523)",
+          "oklch(45% 0.18 278.523)",
+          "oklch(59.01% 0.19675 278.523)",
+          "oklch(70% 0.14 278.523)",
+          "oklch(80% 0.08 278.523)",
+          "oklch(90% 0.04 278.523)",
+          "oklch(96% 0.015 278.523)"
+        ]
+      },
+      "secondary": {
+        "role": "secondary",
+        "displayName": "Done Mint",
+        "canonical": "oklch(78.158% 0.14381 171.311)",
+        "tonalRamp": [
+          "oklch(30% 0.08 171.311)",
+          "oklch(42% 0.1 171.311)",
+          "oklch(55% 0.12 171.311)",
+          "oklch(65% 0.13 171.311)",
+          "oklch(78.158% 0.14381 171.311)",
+          "oklch(85% 0.1 171.311)",
+          "oklch(92% 0.05 171.311)",
+          "oklch(97% 0.02 171.311)"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "oklch(98.511% 0.00011 271.152)",
+        "tonalRamp": [
+          "oklch(18% 0.002 286.055)",
+          "oklch(30% 0.002 286.055)",
+          "oklch(50% 0.01 278.523)",
+          "oklch(70% 0.005 278.523)",
+          "oklch(88% 0.005 278.523)",
+          "oklch(93% 0.00025 271.152)",
+          "oklch(96.5% 0.00015 271.152)",
+          "oklch(98.511% 0.00011 271.152)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "title": { "displayName": "Title", "purpose": "Tool page titles." },
+      "body": { "displayName": "Body", "purpose": "Supporting copy and dock summaries." },
+      "label": { "displayName": "Section label", "purpose": "Uppercase tracking labels above controls." },
+      "mono": { "displayName": "Mono", "purpose": "Sizes, versions, percents." }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "page-enter",
+        "value": "opacity + 10px translate, 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Page mount entrance via .page-enter."
+      },
+      {
+        "name": "interactive",
+        "value": "color/opacity 150–200ms",
+        "purpose": "Default interactive transitions."
+      },
+      {
+        "name": "cta-lift",
+        "value": "translateY(-1.5px) on hover; translateY(1px) on press",
+        "purpose": "Primary CTA press feedback; opacity-only under reduced motion."
+      }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Verb-led filled CTA for run actions.",
+      "html": "<button class=\"ds-btn-primary\">Convert</button>",
+      "css": ".ds-btn-primary { background: var(--primary); color: var(--primary-foreground); border: none; border-radius: var(--radius); padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: transform 150ms ease, opacity 150ms ease; } .ds-btn-primary:hover { transform: translateY(-1.5px); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outline secondary actions such as Open folder or Advanced.",
+      "html": "<button class=\"ds-btn-secondary\">Open folder</button>",
+      "css": ".ds-btn-secondary { background: transparent; color: var(--muted-foreground); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color 150ms ease, background 150ms ease; } .ds-btn-secondary:hover { color: var(--foreground); background: var(--muted); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Format Chip On",
+      "kind": "chip",
+      "refersTo": "format-chip-on",
+      "description": "Selected format or preset chip.",
+      "html": "<button class=\"ds-chip-on\" type=\"button\">WebP</button>",
+      "css": ".ds-chip-on { background: var(--primary); color: var(--primary-foreground); border: none; border-radius: calc(var(--radius) - 2px); padding: 0.375rem 0.625rem; font-size: 0.75rem; font-weight: 500; cursor: pointer; } .ds-chip-on:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Format Chip Off",
+      "kind": "chip",
+      "refersTo": "format-chip-off",
+      "description": "Idle format or preset chip.",
+      "html": "<button class=\"ds-chip-off\" type=\"button\">PNG</button>",
+      "css": ".ds-chip-off { background: var(--background); color: var(--muted-foreground); border: 1px solid color-mix(in oklch, var(--border) 60%, transparent); border-radius: calc(var(--radius) - 2px); padding: 0.375rem 0.625rem; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: background 150ms ease, color 150ms ease; } .ds-chip-off:hover { background: var(--accent); color: var(--accent-foreground); } .ds-chip-off:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Settings Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Bordered content card for Settings.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Language</h3><p class=\"ds-card-body\">Choose the interface language.</p></div>",
+      "css": ".ds-card { background: var(--card); color: var(--card-foreground); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; } .ds-card-title { margin: 0 0 0.25rem; font-size: 0.875rem; font-weight: 600; } .ds-card-body { margin: 0; font-size: 0.75rem; color: var(--muted-foreground); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Workbench",
+    "overview": "PictoolsApp is an operate surface where the media is the page. Empty tools are a full-canvas drop zone; loaded tools are stage + plan dock + horizontal filmstrip. Chrome stays thin and calm. Accent is rare; success is silent.",
+    "keyCharacteristics": [
+      "Stage + filmstrip macrostructure",
+      "System UI type only",
+      "Violet primary used sparingly; mint for done only",
+      "Flat tonal surfaces",
+      "Verb-led CTAs and segmented chips"
+    ],
+    "rules": [
+      {
+        "name": "The One Voice Rule",
+        "body": "Primary accent appears on ≤ ~5% of the viewport; rarity is the signal.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mint Is Done Rule",
+        "body": "Secondary mint is reserved for success/done states only.",
+        "section": "colors"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces rest flat. Motion and tint carry state, not drop shadows.",
+        "section": "elevation"
+      },
+      {
+        "name": "The System Stack Rule",
+        "body": "Do not add display webfonts to tool pages.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "Keep tool pages stage-first with filmstrip + dock",
+      "Use silent success (check + size delta)",
+      "Preserve source files; force a suffix on path collision",
+      "Extend this system when adding tools"
+    ],
+    "donts": [
+      "Invent a second palette or loud enrichment on app pages",
+      "Add celebratory toasts on success",
+      "Restyle Home or Sidebar opportunistically",
+      "Overwrite source media"
+    ]
+  }
+}

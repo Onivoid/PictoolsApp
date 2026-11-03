@@ -1,10 +1,5 @@
 import type { DragEvent, ReactNode, Ref } from "react";
 
-/* Hallmark · pre-emit critique: P4 H5 E4 S5 R5 V4
- * macrostructure: Stage+filmstrip · tone: utilitarian · theme: existing tokens
- * genre: modern-minimal · enrichment: none
- */
-
 interface ToolWorkbenchProps {
   icon: ReactNode;
   title: string;
@@ -16,6 +11,8 @@ interface ToolWorkbenchProps {
   draggingLabel?: string;
   busy?: boolean;
   busyLabel?: string;
+  /** 0–100 determinate progress under the busy label; omit for indeterminate. */
+  busyProgress?: number | null;
   dropRef?: Ref<HTMLDivElement>;
   onDragOver?: (event: DragEvent) => void;
   onDragLeave?: (event: DragEvent) => void;
@@ -33,6 +30,7 @@ export function ToolWorkbench({
   draggingLabel,
   busy = false,
   busyLabel,
+  busyProgress = null,
   dropRef,
   onDragOver,
   onDragLeave,
@@ -58,10 +56,26 @@ export function ToolWorkbench({
         {stage}
         {busy && !isDragging && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/70">
-            <p className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <span className="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              {busyLabel}
-            </p>
+            <div className="flex flex-col items-center gap-3 px-6 max-w-sm w-full">
+              <p className="flex items-center gap-2 text-sm font-medium text-foreground text-center">
+                <span className="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin motion-reduce:animate-none shrink-0" />
+                {busyLabel}
+              </p>
+              {busyProgress != null && (
+                <div
+                  className="w-full h-1.5 rounded-full bg-muted overflow-hidden"
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={busyProgress}
+                >
+                  <div
+                    className="h-full rounded-full bg-primary transition-[width] duration-200 ease-out motion-reduce:transition-none"
+                    style={{ width: `${Math.min(100, Math.max(0, busyProgress))}%` }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         )}
         {isDragging && (

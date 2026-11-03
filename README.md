@@ -15,17 +15,17 @@ PictoolsApp does the same job offline, instantly, with no data leaving your comp
 ## What it does
 
 - **Image conversion** — PNG, JPEG, WEBP, ICO (per-size files), and a full **App Icons** pack in one click: PNG set + `.icns` (macOS) + `.ico` (Windows) + Windows Store sizes
+- **Optimize for the web** — resize ceilings, WebP/JPEG targeting, originals never overwritten
+- **Video compress / convert** — presets (smaller / balanced / higher quality) and MP4, WebM, MOV, MKV via a bundled FFmpeg sidecar
 - Drag & drop or file picker
 - Live progress feedback per file during conversion
 - Output folder of your choice
-
-More tools are planned.
 
 ## Stack
 
 Built with [Tauri v2](https://tauri.app) + [React 19](https://react.dev) + [TypeScript](https://www.typescriptlang.org).
 
-Image processing runs entirely in Rust — [`image`](https://crates.io/crates/image), [`ico`](https://crates.io/crates/ico), [`icns`](https://crates.io/crates/icns). No native system dependencies required.
+Image processing runs in Rust — [`image`](https://crates.io/crates/image), [`ico`](https://crates.io/crates/ico), [`icns`](https://crates.io/crates/icns). Video uses a bundled FFmpeg sidecar (fetched at build time, not committed).
 
 UI: [Tailwind CSS v4](https://tailwindcss.com) · [shadcn/ui](https://ui.shadcn.com) · [Lucide](https://lucide.dev) · [Radix UI](https://www.radix-ui.com)
 
@@ -37,14 +37,18 @@ UI: [Tailwind CSS v4](https://tailwindcss.com) · [shadcn/ui](https://ui.shadcn.
 git clone https://github.com/Onivoid/PictoolsApp
 cd PictoolsApp
 pnpm install
+./scripts/fetch-ffmpeg.sh   # required for the Video tool (sidecar, not committed)
 pnpm tauri dev
 ```
 
 Build a distributable:
 
 ```bash
+./scripts/fetch-ffmpeg.sh
 pnpm tauri build
 ```
+
+GitHub Releases already fetch the matching FFmpeg binary per OS/arch in `.github/workflows/release.yml`.
 
 ## i18n
 

@@ -131,6 +131,58 @@
             "compare": "Drag to compare"
         }
     },
+    "video": {
+        "title": "Video",
+        "subtitle": "Compress and convert videos — originals stay untouched",
+        "run": "Process videos",
+        "processing": "Working…",
+        "processingLabel": "Encoding {{file}} ({{percent}}%)",
+        "processingLabelIndeterminate": "Encoding {{file}}…",
+        "readingLabel": "Reading {{count}} video(s)…",
+        "dropzone": {
+            "idle": "Drop videos here, or browse to add them",
+            "dragging": "Release to add these videos",
+            "hint": "MP4, MOV, MKV, WebM, AVI, M4V · pick a preset and output format below",
+            "add": "Add videos",
+            "reading": "Reading {{count}} video(s)…"
+        },
+        "plan": {
+            "file": "{{count}} video ready",
+            "files": "{{count}} videos ready",
+            "suffix": "writes beside sources with a suffix",
+            "besideFiles": "saved next to the originals",
+            "besideMixed": "saved in each original folder",
+            "chooseFolder": "Choose output folder…",
+            "clearFolder": "Save next to originals instead"
+        },
+        "format": {
+            "label": "Output format"
+        },
+        "preset": {
+            "label": "Size vs quality",
+            "light": "Smaller",
+            "balanced": "Balanced",
+            "quality": "Higher quality",
+            "hint": {
+                "light": "Stronger compression. Width capped near 1280px.",
+                "balanced": "Default trade-off. Width capped near 1920px.",
+                "quality": "Gentler compression. Keeps the source resolution."
+            }
+        },
+        "output": {
+            "naming": "Output names",
+            "suffix": "Add a suffix",
+            "replace": "Same name in the output folder"
+        },
+        "meta": {
+            "unknownDims": "dimensions unknown"
+        },
+        "errors": {
+            "sidecar": "FFmpeg is missing from this build. Run scripts/fetch-ffmpeg.sh, then rebuild.",
+            "failed": "Couldn’t process this video. Try another format or preset.",
+            "generic": "Something went wrong while encoding."
+        }
+    },
     "updater": {
         "available": {
             "title": "Update Available",

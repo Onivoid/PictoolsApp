@@ -26,6 +26,26 @@
         "dialog:allow-open",
         "core:window:allow-start-dragging",
         "core:path:default",
-        "core:event:default"
+        "core:event:default",
+        {
+            "identifier": "shell:allow-execute",
+            "allow": [
+                {
+                    "name": "binaries/ffmpeg",
+                    "sidecar": true,
+                    "args": true
+                }
+            ]
+        },
+        {
+            "identifier": "shell:allow-spawn",
+            "allow": [
+                {
+                    "name": "binaries/ffmpeg",
+                    "sidecar": true,
+                    "args": true
+                }
+            ]
+        }
     ]
 }

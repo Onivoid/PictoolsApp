@@ -8,4 +8,6 @@ export { useLanguage } from "./useLanguage";
 export { useUpdater } from "./useUpdater";
 export { useImageDrop, loadImageEntries } from "./useImageDrop";
 export type { ImageEntry, ImageMetadata, Orientation } from "./useImageDrop";
+export { useVideoDrop, loadVideoEntries } from "./useVideoDrop";
+export type { VideoEntry, VideoMetadata } from "./useVideoDrop";
 export type { Language } from "./useLanguage";

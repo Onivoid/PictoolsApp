@@ -1,4 +1,5 @@
 mod commands;
+mod ffmpeg;
 
 use commands::*;
 
@@ -10,13 +11,16 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             greet,
             get_system_info,
             convert_images,
             generate_app_icons,
             optimize_images,
-            get_images_metadata
+            get_images_metadata,
+            get_videos_metadata,
+            process_videos
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
