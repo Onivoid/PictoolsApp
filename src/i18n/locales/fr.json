@@ -208,7 +208,7 @@
             "artistHint": "La personne ou le studio qui a réalisé l’œuvre.",
             "artistPlaceholder": "Ada Photographe",
             "copyright": "Mention copyright",
-            "copyrightHint": "Année et titulaire. Exemple : © 2026 Ada Photographe",
+            "copyrightHint": "Commence par © — année et titulaire. Exemple : © 2026 Ada Photographe",
             "copyrightPlaceholder": "© 2026 Ada Photographe",
             "credit": "Crédit",
             "creditHint": "Comment citer l’œuvre à la publication.",

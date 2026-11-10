@@ -208,7 +208,7 @@
             "artistHint": "The person or studio who made the work.",
             "artistPlaceholder": "Ada Photographer",
             "copyright": "Copyright notice",
-            "copyrightHint": "Year and rights holder. Example: © 2026 Ada Photographer",
+            "copyrightHint": "Starts with © — year and rights holder. Example: © 2026 Ada Photographer",
             "copyrightPlaceholder": "© 2026 Ada Photographer",
             "credit": "Credit line",
             "creditHint": "How the work should be credited when published.",

@@ -106,6 +106,8 @@ const EMPTY_RIGHTS: RightsTemplate = {
   contact: "",
 };
 
+const COPYRIGHT_MARK = "©";
+
 function fileNameFromPath(path: string): string {
   return path.split(/[\\/]/).pop() ?? path;
 }
@@ -122,6 +124,21 @@ function rightsFromCommon(common: ExifCommonFields): RightsTemplate {
     rightsUsage: common.rightsUsage,
     contact: common.contact,
   };
+}
+
+/** Keep © as the leading character when the notice is non-empty. */
+function normalizeCopyrightNotice(value: string): string {
+  if (!value.trim() || value.trim() === COPYRIGHT_MARK) {
+    return value.trim() ? COPYRIGHT_MARK + " " : "";
+  }
+  if (value.startsWith(COPYRIGHT_MARK)) {
+    return value;
+  }
+  const body = value
+    .replace(/^\s*\([cC]\)\s*/, "")
+    .replace(/^\s+/, "");
+  if (!body.trim()) return COPYRIGHT_MARK + " ";
+  return COPYRIGHT_MARK + " " + body;
 }
 
 function Field({
@@ -277,8 +294,12 @@ export default function Exif() {
       const result = await invoke<ExifReadResult>("read_exif", { path });
       setSupported(result.supported);
       setReadError(isBenignReadMessage(result.error) ? null : result.error);
-      setCommon(result.common);
-      setBaseline(result.common);
+      const commonValue = {
+        ...result.common,
+        copyright: normalizeCopyrightNotice(result.common.copyright),
+      };
+      setCommon(commonValue);
+      setBaseline(commonValue);
       setTags(result.tags);
       setTagEdits({});
       setFiles((prev) =>
@@ -349,7 +370,10 @@ export default function Exif() {
           : [];
 
       return {
-        common,
+        common: {
+          ...common,
+          copyright: normalizeCopyrightNotice(common.copyright),
+        },
         tagUpdates,
         mode,
       };
@@ -459,6 +483,7 @@ export default function Exif() {
     setCommon((prev) => ({
       ...prev,
       ...rightsTemplate,
+      copyright: normalizeCopyrightNotice(rightsTemplate.copyright),
     }));
     setActiveTab("rights");
   };
@@ -671,9 +696,36 @@ export default function Exif() {
                             value={common.copyright}
                             disabled={formDisabled}
                             placeholder={t("exif.fields.copyrightPlaceholder")}
-                            onChange={(event) => updateCommon("copyright", event.target.value)}
+                            aria-describedby="exif-copyright-hint"
+                            onFocus={() => {
+                              if (!common.copyright.trim()) {
+                                updateCommon("copyright", COPYRIGHT_MARK + " ");
+                              } else {
+                                updateCommon(
+                                  "copyright",
+                                  normalizeCopyrightNotice(common.copyright)
+                                );
+                              }
+                            }}
+                            onChange={(event) => {
+                              updateCommon(
+                                "copyright",
+                                normalizeCopyrightNotice(event.target.value)
+                              );
+                            }}
+                            onBlur={() => {
+                              if (common.copyright.trim() === COPYRIGHT_MARK) {
+                                updateCommon("copyright", "");
+                              }
+                            }}
                             className={inputClass}
                           />
+                          <p
+                            id="exif-copyright-hint"
+                            className="text-[11px] text-muted-foreground leading-relaxed"
+                          >
+                            {t("exif.fields.copyrightHint")}
+                          </p>
                         </Field>
                         <Field label={t("exif.fields.credit")}>
                           <input
