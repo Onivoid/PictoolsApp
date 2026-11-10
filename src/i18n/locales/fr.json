@@ -141,7 +141,7 @@
     },
     "exif": {
         "title": "Exif",
-        "subtitle": "Signer vos droits, nettoyer le GPS, garder les originaux.",
+        "subtitle": "Signer vos droits, nettoyer le GPS — modifie les fichiers ouverts.",
         "saveSelected": "Enregistrer ce fichier",
         "saving": "Enregistrement…",
         "stripGps": "Retirer le GPS",
@@ -162,11 +162,7 @@
         "plan": {
             "file": "{{count}} image prête",
             "files": "{{count}} images prêtes",
-            "suffix": "écrit à côté des sources avec un suffixe",
-            "besideFiles": "enregistré à côté des originaux",
-            "besideMixed": "enregistré dans chaque dossier d’origine",
-            "chooseFolder": "Choisir un dossier de sortie…",
-            "clearFolder": "Enregistrer plutôt à côté des originaux"
+            "inPlace": "écrit dans les fichiers choisis"
         },
         "tabs": {
             "label": "Sections de métadonnées",
@@ -197,7 +193,8 @@
             "lead": "Retirez le GPS avant publication si le lieu de tournage doit rester privé."
         },
         "queue": {
-            "missingRights": "Sans droits"
+            "missingRights": "Sans droits",
+            "saved": "Enregistré"
         },
         "fields": {
             "description": "Légende / titre",
@@ -232,12 +229,6 @@
             "3": "3 · Rotation 180°",
             "6": "6 · Rotation 90° horaire",
             "8": "8 · Rotation 90° antihoraire"
-        },
-        "output": {
-            "toggle": "Options de sortie",
-            "naming": "Noms de sortie",
-            "suffix": "Ajouter un suffixe",
-            "replace": "Même nom dans le dossier de sortie"
         },
         "advanced": {
             "toggle": "Afficher tous les tags",

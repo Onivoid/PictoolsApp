@@ -15,9 +15,9 @@ THESIS: Postprod rights desk where creator fields lead and bulk-stamp the set wi
 
 OWN-WORLD: Quiet Workbench tokens only. System UI type, hairline borders, violet primary CTA, mint for done. No second palette.
 
-STORY: Artist drops a finished set, fills creator/copyright/credit/usage/contact once (optionally from a remembered template), applies rights to all files, then may clean GPS or tweak one image.
+STORY: Artist drops a finished set, fills creator/copyright/credit/usage/contact once (optionally from a remembered template), applies rights to all files in place, then may clean GPS or tweak one image.
 
-FIRST VIEWPORT: Header. Stage split preview + tabbed inspector (Rights first). Rights panel owns bulk CTA. Dock saves the selected file; filmstrip flags files still missing rights.
+FIRST VIEWPORT: Header. Stage split retractable media panel + tabbed inspector (Rights first). Rights panel owns bulk CTA. Dock saves the selected file in place; the panel flags files still missing rights.
 
 FORM: Established tool workbench extended with section tabs and a rights-only write mode. Signature interaction: one rights form stamps N files while leaving other Exif intact.
 

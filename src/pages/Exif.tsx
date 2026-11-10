@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { open } from "@tauri-apps/plugin-dialog";
 import {
   ChevronDown,
   CopyPlus,
@@ -16,7 +15,6 @@ import {
 import { useTranslation } from "react-i18next";
 import {
   FileDropzone,
-  FormatChip,
   MediaSidePanel,
   ToolDock,
   ToolWorkbench,
@@ -26,7 +24,6 @@ import { loadImageEntries, useImageDrop, useLocalStorage } from "@/composables";
 import { ACCEPTED_EXIF_EXTENSIONS, STORAGE_KEYS } from "@/constants";
 import { formatBytes } from "@/utils/format";
 
-type OutputNaming = "suffix" | "replace";
 type PanelTab = "rights" | "photo" | "camera" | "location" | "tags";
 
 interface ExifCommonFields {
@@ -109,10 +106,6 @@ const EMPTY_RIGHTS: RightsTemplate = {
   contact: "",
 };
 
-function parentFolder(path: string): string {
-  return path.replace(/[\\/][^\\/]+$/, "") || path;
-}
-
 function fileNameFromPath(path: string): string {
   return path.split(/[\\/]/).pop() ?? path;
 }
@@ -170,10 +163,6 @@ export default function Exif() {
   const [isReadingExif, setIsReadingExif] = useState(false);
   const [activeTab, setActiveTab] = useState<PanelTab>("rights");
   const [showAllTags, setShowAllTags] = useState(false);
-  const [outputNaming, setOutputNaming] = useState<OutputNaming>("suffix");
-  const [customSuffix, setCustomSuffix] = useState("_exif");
-  const [outputDir, setOutputDir] = useState("");
-  const [outputOpen, setOutputOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useLocalStorage("exif-media-panel-open", true);
   const [isWorking, setIsWorking] = useState(false);
   const [isDetecting, setIsDetecting] = useState(false);
@@ -347,20 +336,6 @@ export default function Exif() {
     return () => unlisten?.();
   }, []);
 
-  const handleSelectOutputDir = async () => {
-    const dir = await open({ directory: true, multiple: false });
-    if (dir && typeof dir === "string") setOutputDir(dir);
-  };
-
-  const options = useMemo(
-    () => ({
-      outputNaming,
-      customSuffix,
-      outputDir,
-    }),
-    [outputNaming, customSuffix, outputDir]
-  );
-
   const patchPayload = useCallback(
     (mode: "full" | "rights") => {
       const tagUpdates =
@@ -410,7 +385,6 @@ export default function Exif() {
       const results = await invoke<ExifWriteResult[]>("write_exif", {
         files: paths,
         patch: patchPayload(mode),
-        options,
       });
       applyResults(results, mode);
       if (mode === "rights") {
@@ -454,7 +428,6 @@ export default function Exif() {
       const results = await invoke<ExifWriteResult[]>("strip_exif", {
         files: selectedFile && mode === "gps" ? [selectedFile.path] : paths,
         mode,
-        options,
       });
       applyResults(results, "full");
       if (selectedFile) {
@@ -494,12 +467,6 @@ export default function Exif() {
     setRightsTemplate(rightsFromCommon(common));
   };
 
-  const uniqueFolders = new Set(files.map((file) => parentFolder(file.path)));
-  const destination = outputDir
-    ? outputDir
-    : uniqueFolders.size <= 1
-      ? t("exif.plan.besideFiles")
-      : t("exif.plan.besideMixed");
   const canAct = files.length > 0 && !isWorking && !isDetecting && !!selectedFile;
   const hasDone = files.some((file) => file.status === "done");
   const hasError = files.some((file) => file.status === "error") && !isWorking;
@@ -519,8 +486,8 @@ export default function Exif() {
     detail:
       file.hasRights === false
         ? t("exif.queue.missingRights")
-        : file.status === "done" && file.outputPath
-          ? fileNameFromPath(file.outputPath)
+        : file.status === "done"
+          ? t("exif.queue.saved")
           : file.originalSize
             ? formatBytes(file.originalSize)
             : undefined,
@@ -1016,27 +983,8 @@ export default function Exif() {
                   {rightsDirty ? ` · ${t("exif.rights.unsaved")}` : ""}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                  {t("exif.plan.suffix")} · {destination}
+                  {t("exif.plan.inPlace")}
                 </p>
-                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <button
-                    type="button"
-                    onClick={outputDir ? () => setOutputDir("") : handleSelectOutputDir}
-                    className="text-xs text-muted-foreground hover:text-foreground cursor-pointer underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
-                  >
-                    {outputDir ? t("exif.plan.clearFolder") : t("exif.plan.chooseFolder")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOutputOpen((value) => !value)}
-                    className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
-                  >
-                    <ChevronDown
-                      className={`w-3.5 h-3.5 transition-transform ${outputOpen ? "rotate-180" : ""}`}
-                    />
-                    {t("exif.output.toggle")}
-                  </button>
-                </div>
               </div>
             }
             secondary={
@@ -1074,39 +1022,6 @@ export default function Exif() {
                   </>
                 )}
               </button>
-            }
-            advancedOpen={outputOpen}
-            advanced={
-              <div className="flex flex-col gap-3 min-w-0 max-w-xl">
-                <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  {t("exif.output.naming")}
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  <FormatChip
-                    selected={outputNaming === "suffix"}
-                    disabled={isWorking}
-                    onClick={() => setOutputNaming("suffix")}
-                  >
-                    {t("exif.output.suffix")}
-                  </FormatChip>
-                  <FormatChip
-                    selected={outputNaming === "replace"}
-                    disabled={isWorking}
-                    onClick={() => setOutputNaming("replace")}
-                  >
-                    {t("exif.output.replace")}
-                  </FormatChip>
-                </div>
-                {outputNaming === "suffix" && (
-                  <input
-                    type="text"
-                    value={customSuffix}
-                    onChange={(event) => setCustomSuffix(event.target.value)}
-                    placeholder="_exif"
-                    className="w-full max-w-xs px-2 py-1.5 text-xs rounded-md border border-border bg-background focus-visible:outline-2 focus-visible:outline-ring"
-                  />
-                )}
-              </div>
             }
           />
         )

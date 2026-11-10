@@ -28,13 +28,13 @@ Confirmed:
 - Image conversion: PNG, JPEG, WEBP, ICO; App Icons pack (PNG + ICNS + ICO)
 - Image optimize « Pour le web »: resize ceilings, WebP/JPEG quality search, never overwrite sources
 - Video compress + convert (presets light / balanced / quality; outputs mp4, webm, mov, mkv) via bundled FFmpeg sidecar
-- Exif editor: creator rights (artist, copyright, credit, usage, contact) with bulk stamp that leaves camera/GPS alone; per-file photo/camera/location edits; strip GPS or all Exif; JPEG/PNG/TIFF/WebP; `_exif` suffix by default
+- Exif editor: creator rights (artist, copyright, credit, usage, contact) with bulk stamp that leaves camera/GPS alone; per-file photo/camera/location edits; strip GPS or all Exif; JPEG/PNG/TIFF/WebP; writes metadata in place on the chosen files
 - Drag-and-drop, file picker, per-file progress events
 - Auto-updater for shipped builds
 
 Constraints:
 - Local-only: no uploads, no remote processing APIs
-- Never overwrite source files; force a suffix when paths collide
+- Convert / Optimize / Video never overwrite sources (suffix or chosen folder); Exif is the exception and edits the opened files in place
 - FFmpeg is GPL: the sidecar binary’s license obligations apply to distribution of builds that include it
 - Impeccable Live mode is not available inside the Tauri webview; design work uses PRODUCT.md / DESIGN.md and shipped UI inspection
 
@@ -62,7 +62,7 @@ Undecided / out of current scope:
 1. Files stay on the machine — privacy is default, not a setting.
 2. Tools are destinations: one job per page, stage-first, minimal chrome.
 3. Silent success: show size deltas and checks, not confetti.
-4. Never destroy the original; always write beside or into a chosen folder.
+4. Convert / Optimize / Video never destroy the original (write beside or into a chosen folder). Exif updates metadata on the files you open.
 5. Prefer clear presets over exposed encoder knobs unless the user asks for advanced control.
 
 ## Accessibility & Inclusion

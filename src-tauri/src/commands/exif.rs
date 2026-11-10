@@ -3,11 +3,9 @@ use little_exif::ifd::ExifTagGroup;
 use little_exif::metadata::Metadata;
 use little_exif::rational::uR64;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use tauri::{AppHandle, Emitter};
 use tokio::task::spawn_blocking;
-
-const DEFAULT_SUFFIX: &str = "_exif";
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -69,14 +67,6 @@ pub struct ExifWritePatch {
 
 fn default_write_mode() -> String {
     "full".into()
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ExifWriteOptions {
-    pub output_naming: String,
-    pub custom_suffix: String,
-    pub output_dir: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -695,65 +685,12 @@ fn apply_tag_updates(meta: &mut Metadata, updates: &[ExifTagUpdate]) {
     }
 }
 
-fn resolve_output_dir(input_path: &Path, output_dir: &str) -> PathBuf {
-    if output_dir.is_empty() {
-        input_path
-            .parent()
-            .map(Path::to_path_buf)
-            .unwrap_or_else(|| PathBuf::from("."))
-    } else {
-        PathBuf::from(output_dir)
-    }
-}
-
-fn build_output_path(input_path: &Path, output_dir: &Path, options: &ExifWriteOptions) -> PathBuf {
-    let stem = input_path
-        .file_stem()
-        .and_then(|s| s.to_str())
-        .unwrap_or("output");
-    let ext = input_path
-        .extension()
-        .and_then(|s| s.to_str())
-        .unwrap_or("jpg");
-    let suffix = if !options.custom_suffix.is_empty() {
-        options.custom_suffix.as_str()
-    } else {
-        DEFAULT_SUFFIX
-    };
-
-    let same_name = output_dir.join(format!("{}.{}", stem, ext));
-    if options.output_naming == "replace" && same_name != input_path {
-        return same_name;
-    }
-
-    let mut candidate = output_dir.join(format!("{}{}.{}", stem, suffix, ext));
-    if candidate == input_path {
-        candidate = output_dir.join(format!("{}{}.{}", stem, DEFAULT_SUFFIX, ext));
-    }
-    candidate
-}
-
-fn prepare_output_file(input: &Path, output: &Path) -> Result<(), String> {
-    if input == output {
-        return Ok(());
-    }
-    if let Some(parent) = output.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| format!("Cannot create folder: {}", e))?;
-    }
-    std::fs::copy(input, output).map_err(|e| format!("Cannot copy source: {}", e))?;
-    Ok(())
-}
-
-fn write_metadata_to(meta: &Metadata, output: &Path) -> Result<(), String> {
-    meta.write_to_file(output)
+fn write_metadata_to(meta: &Metadata, path: &Path) -> Result<(), String> {
+    meta.write_to_file(path)
         .map_err(|e| format!("Cannot write Exif: {}", e))
 }
 
-fn apply_patch_to_file(
-    input: &str,
-    patch: &ExifWritePatch,
-    options: &ExifWriteOptions,
-) -> ExifWriteResult {
+fn apply_patch_to_file(input: &str, patch: &ExifWritePatch) -> ExifWriteResult {
     let input_path = Path::new(input);
     if !is_supported_extension(input_path) {
         return ExifWriteResult {
@@ -772,18 +709,7 @@ fn apply_patch_to_file(
         apply_tag_updates(&mut meta, &patch.tag_updates);
     }
 
-    let destination = resolve_output_dir(input_path, &options.output_dir);
-    let output_path = build_output_path(input_path, &destination, options);
-
-    if let Err(e) = prepare_output_file(input_path, &output_path) {
-        return ExifWriteResult {
-            input: input.to_string(),
-            output: None,
-            error: Some(e),
-        };
-    }
-
-    if let Err(e) = write_metadata_to(&meta, &output_path) {
+    if let Err(e) = write_metadata_to(&meta, input_path) {
         return ExifWriteResult {
             input: input.to_string(),
             output: None,
@@ -793,12 +719,12 @@ fn apply_patch_to_file(
 
     ExifWriteResult {
         input: input.to_string(),
-        output: Some(output_path.to_string_lossy().to_string()),
+        output: Some(input.to_string()),
         error: None,
     }
 }
 
-fn strip_file(input: &str, mode: &str, options: &ExifWriteOptions) -> ExifWriteResult {
+fn strip_file(input: &str, mode: &str) -> ExifWriteResult {
     let input_path = Path::new(input);
     if !is_supported_extension(input_path) {
         return ExifWriteResult {
@@ -808,20 +734,9 @@ fn strip_file(input: &str, mode: &str, options: &ExifWriteOptions) -> ExifWriteR
         };
     }
 
-    let destination = resolve_output_dir(input_path, &options.output_dir);
-    let output_path = build_output_path(input_path, &destination, options);
-
-    if let Err(e) = prepare_output_file(input_path, &output_path) {
-        return ExifWriteResult {
-            input: input.to_string(),
-            output: None,
-            error: Some(e),
-        };
-    }
-
     match mode {
         "all" => {
-            if let Err(e) = Metadata::file_clear_metadata(&output_path) {
+            if let Err(e) = Metadata::file_clear_metadata(input_path) {
                 return ExifWriteResult {
                     input: input.to_string(),
                     output: None,
@@ -830,7 +745,7 @@ fn strip_file(input: &str, mode: &str, options: &ExifWriteOptions) -> ExifWriteR
             }
         }
         "gps" => {
-            let mut meta = match Metadata::new_from_path(&output_path) {
+            let mut meta = match Metadata::new_from_path(input_path) {
                 Ok(m) => m,
                 Err(e) => {
                     return ExifWriteResult {
@@ -841,7 +756,7 @@ fn strip_file(input: &str, mode: &str, options: &ExifWriteOptions) -> ExifWriteR
                 }
             };
             clear_gps_tags(&mut meta);
-            if let Err(e) = write_metadata_to(&meta, &output_path) {
+            if let Err(e) = write_metadata_to(&meta, input_path) {
                 return ExifWriteResult {
                     input: input.to_string(),
                     output: None,
@@ -860,7 +775,7 @@ fn strip_file(input: &str, mode: &str, options: &ExifWriteOptions) -> ExifWriteR
 
     ExifWriteResult {
         input: input.to_string(),
-        output: Some(output_path.to_string_lossy().to_string()),
+        output: Some(input.to_string()),
         error: None,
     }
 }
@@ -883,7 +798,6 @@ pub async fn write_exif(
     app: AppHandle,
     files: Vec<String>,
     patch: ExifWritePatch,
-    options: ExifWriteOptions,
 ) -> Vec<ExifWriteResult> {
     let total = files.len().max(1);
     spawn_blocking(move || {
@@ -893,7 +807,7 @@ pub async fn write_exif(
                 "exif:progress",
                 ((index * 100 / total) as u32, path.clone()),
             );
-            let result = apply_patch_to_file(path, &patch, &options);
+            let result = apply_patch_to_file(path, &patch);
             results.push(result);
             let _ = app.emit("exif:progress", (100u32, path.clone()));
         }
@@ -914,7 +828,6 @@ pub async fn strip_exif(
     app: AppHandle,
     files: Vec<String>,
     mode: String,
-    options: ExifWriteOptions,
 ) -> Vec<ExifWriteResult> {
     let total = files.len().max(1);
     spawn_blocking(move || {
@@ -924,7 +837,7 @@ pub async fn strip_exif(
                 "exif:progress",
                 ((index * 100 / total) as u32, path.clone()),
             );
-            let result = strip_file(path, &mode, &options);
+            let result = strip_file(path, &mode);
             results.push(result);
             let _ = app.emit("exif:progress", (100u32, path.clone()));
         }

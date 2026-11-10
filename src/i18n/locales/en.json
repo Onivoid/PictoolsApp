@@ -141,7 +141,7 @@
     },
     "exif": {
         "title": "Exif",
-        "subtitle": "Stamp creator rights, clean location data, keep originals.",
+        "subtitle": "Stamp creator rights, clean location data — edits the files you open.",
         "saveSelected": "Save this file",
         "saving": "Saving…",
         "stripGps": "Remove GPS",
@@ -162,11 +162,7 @@
         "plan": {
             "file": "{{count}} image ready",
             "files": "{{count}} images ready",
-            "suffix": "writes beside sources with a suffix",
-            "besideFiles": "saved next to the originals",
-            "besideMixed": "saved in each original folder",
-            "chooseFolder": "Choose output folder…",
-            "clearFolder": "Save next to originals instead"
+            "inPlace": "writes into the chosen files"
         },
         "tabs": {
             "label": "Metadata sections",
@@ -197,7 +193,8 @@
             "lead": "Strip GPS before publishing a client set if the shoot location should stay private."
         },
         "queue": {
-            "missingRights": "No rights yet"
+            "missingRights": "No rights yet",
+            "saved": "Saved"
         },
         "fields": {
             "description": "Caption / title",
@@ -232,12 +229,6 @@
             "3": "3 · Rotate 180°",
             "6": "6 · Rotate 90° CW",
             "8": "8 · Rotate 90° CCW"
-        },
-        "output": {
-            "toggle": "Output options",
-            "naming": "Output names",
-            "suffix": "Add a suffix",
-            "replace": "Same name in the output folder"
         },
         "advanced": {
             "toggle": "Show all tags",
