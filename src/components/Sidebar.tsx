@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { House, ImageIcon, Sparkles, Clapperboard, Settings, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { House, ImageIcon, Sparkles, Clapperboard, Tags, Settings, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { ROUTES } from "@/constants";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
@@ -108,6 +108,12 @@ export default function Sidebar() {
       icon: <Clapperboard className="w-4 h-4" />,
       label: t("video.title"),
       route: ROUTES.VIDEO,
+      available: true,
+    },
+    {
+      icon: <Tags className="w-4 h-4" />,
+      label: t("exif.title"),
+      route: ROUTES.EXIF,
       available: true,
     },
   ];

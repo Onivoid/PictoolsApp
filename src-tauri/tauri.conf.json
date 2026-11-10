@@ -13,8 +13,10 @@
         "windows": [
             {
                 "title": "PictoolsApp",
-                "width": 1050,
-                "height": 680,
+                "width": 1285,
+                "height": 850,
+                "minWidth": 1285,
+                "minHeight": 850,
                 "resizable": true,
                 "fullscreen": false,
                 "decorations": false,

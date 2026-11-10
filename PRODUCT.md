@@ -28,6 +28,7 @@ Confirmed:
 - Image conversion: PNG, JPEG, WEBP, ICO; App Icons pack (PNG + ICNS + ICO)
 - Image optimize « Pour le web »: resize ceilings, WebP/JPEG quality search, never overwrite sources
 - Video compress + convert (presets light / balanced / quality; outputs mp4, webm, mov, mkv) via bundled FFmpeg sidecar
+- Exif editor: creator rights (artist, copyright, credit, usage, contact) with bulk stamp that leaves camera/GPS alone; per-file photo/camera/location edits; strip GPS or all Exif; JPEG/PNG/TIFF/WebP; `_exif` suffix by default
 - Drag-and-drop, file picker, per-file progress events
 - Auto-updater for shipped builds
 
@@ -39,6 +40,7 @@ Constraints:
 
 Undecided / out of current scope:
 - Advanced video controls (manual CRF, AV1, fine audio routing)
+- Full IPTC/XMP editing (Exif tool covers EXIF IFD tags via little_exif only)
 - Cloud sync, accounts, collaboration
 
 ## Brand Commitments
@@ -51,7 +53,7 @@ Undecided / out of current scope:
 ## Evidence on Hand
 
 - README product story and feature list
-- Implemented tools: Convert, Optimize, Settings; Home landing
+- Implemented tools: Convert, Optimize, Video, Exif, Settings; Home landing
 - Design tokens and workbench in `src/index.css` and `src/components/workbench/`
 - No fabricated testimonials, benchmarks, or customer quotes — do not invent them
 

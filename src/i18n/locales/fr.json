@@ -131,6 +131,122 @@
             "compare": "Glisser pour comparer"
         }
     },
+    "exif": {
+        "title": "Exif",
+        "subtitle": "Signer vos droits, nettoyer le GPS, garder les originaux.",
+        "saveSelected": "Enregistrer ce fichier",
+        "saving": "Enregistrement…",
+        "stripGps": "Retirer le GPS",
+        "stripAll": "Tout retirer",
+        "dirty": "Modifications non enregistrées",
+        "clean": "À jour",
+        "unsupported": "Ce format n’a pas d’Exif ici.",
+        "emptyExif": "Pas d’Exif encore, prêt à remplir",
+        "panel": {
+            "collapse": "Masquer le panneau média",
+            "expand": "Afficher le panneau média",
+            "files": "Fichiers"
+        },
+        "reading": "Lecture Exif…",
+        "processingLabel": "Écriture de {{file}}…",
+        "dropzone": {
+            "idle": "Déposez un set après postprod, ou parcourez pour ajouter",
+            "dragging": "Relâchez pour ajouter ces images",
+            "hint": "JPEG, PNG, TIFF, WebP",
+            "add": "Ajouter des images",
+            "reading": "Lecture de {{count}} photo(s)…"
+        },
+        "plan": {
+            "file": "{{count}} image prête",
+            "files": "{{count}} images prêtes",
+            "suffix": "écrit à côté des sources avec un suffixe",
+            "besideFiles": "enregistré à côté des originaux",
+            "besideMixed": "enregistré dans chaque dossier d’origine",
+            "chooseFolder": "Choisir un dossier de sortie…",
+            "clearFolder": "Enregistrer plutôt à côté des originaux"
+        },
+        "tabs": {
+            "label": "Sections de métadonnées",
+            "rights": "Droits",
+            "photo": "Photo",
+            "camera": "Appareil",
+            "location": "Lieu",
+            "tags": "Tous les tags"
+        },
+        "groups": {
+            "photo": "Photo",
+            "camera": "Appareil",
+            "location": "Lieu",
+            "rights": "Droits du créateur",
+            "advanced": "Tous les tags"
+        },
+        "rights": {
+            "lead": "Remplissez une fois, puis appliquez au set entier. Appareil et GPS de chaque fichier restent inchangés.",
+            "bulkTitle": "Appliquer les droits à {{count}} images",
+            "bulkHint": "N’écrit que créateur, copyright, crédit, usage et contact.",
+            "applyAll": "Appliquer à {{count}} images",
+            "useTemplate": "Charger les droits mémorisés",
+            "saveTemplate": "Mémoriser pour la prochaine fois",
+            "missingCount": "{{count}} sans créateur/copyright",
+            "unsaved": "droits modifiés"
+        },
+        "location": {
+            "lead": "Retirez le GPS avant publication si le lieu de tournage doit rester privé."
+        },
+        "queue": {
+            "missingRights": "Sans droits"
+        },
+        "fields": {
+            "description": "Légende / titre",
+            "descriptionPlaceholder": "Ce que montre l’image",
+            "datetime": "Date de prise de vue",
+            "make": "Marque",
+            "model": "Modèle",
+            "software": "Logiciel",
+            "orientation": "Orientation",
+            "artist": "Créateur",
+            "artistHint": "La personne ou le studio qui a réalisé l’œuvre.",
+            "artistPlaceholder": "Ada Photographe",
+            "copyright": "Mention copyright",
+            "copyrightHint": "Année et titulaire. Exemple : © 2026 Ada Photographe",
+            "copyrightPlaceholder": "© 2026 Ada Photographe",
+            "credit": "Crédit",
+            "creditHint": "Comment citer l’œuvre à la publication.",
+            "creditPlaceholder": "Photo : Ada Photographe / Studio Nord",
+            "contact": "Contact",
+            "contactHint": "Email ou site pour les demandes de licence.",
+            "contactPlaceholder": "hello@studio.example",
+            "rightsUsage": "Conditions d’usage",
+            "rightsUsageHint": "Licence ou restrictions. Reste dans le fichier pour qui lit l’Exif.",
+            "rightsUsagePlaceholder": "Tous droits réservés. Usage éditorial uniquement. Pas d’entraînement IA sans accord écrit.",
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "altitude": "Altitude (m)",
+            "clearGps": "Effacer le GPS à l’enregistrement"
+        },
+        "orientation": {
+            "1": "1 · Normal",
+            "3": "3 · Rotation 180°",
+            "6": "6 · Rotation 90° horaire",
+            "8": "8 · Rotation 90° antihoraire"
+        },
+        "output": {
+            "toggle": "Options de sortie",
+            "naming": "Noms de sortie",
+            "suffix": "Ajouter un suffixe",
+            "replace": "Même nom dans le dossier de sortie"
+        },
+        "advanced": {
+            "toggle": "Afficher tous les tags",
+            "hide": "Masquer tous les tags",
+            "empty": "Aucun tag Exif sur ce fichier.",
+            "readonly": "Lecture seule"
+        },
+        "errors": {
+            "noResult": "Aucun résultat retourné",
+            "generic": "Une erreur est survenue pendant l’écriture Exif."
+        }
+    },
     "video": {
         "title": "Vidéo",
         "subtitle": "Compresser et convertir — les originaux restent intacts",

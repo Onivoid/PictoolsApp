@@ -20,7 +20,10 @@ pub fn run() {
             optimize_images,
             get_images_metadata,
             get_videos_metadata,
-            process_videos
+            process_videos,
+            read_exif,
+            write_exif,
+            strip_exif
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

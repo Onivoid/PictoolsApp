@@ -131,6 +131,122 @@
             "compare": "Drag to compare"
         }
     },
+    "exif": {
+        "title": "Exif",
+        "subtitle": "Stamp creator rights, clean location data, keep originals.",
+        "saveSelected": "Save this file",
+        "saving": "Saving…",
+        "stripGps": "Remove GPS",
+        "stripAll": "Remove all Exif",
+        "dirty": "Unsaved changes",
+        "clean": "Up to date",
+        "unsupported": "This format has no Exif support here.",
+        "emptyExif": "No Exif yet, ready to fill",
+        "panel": {
+            "collapse": "Hide media panel",
+            "expand": "Show media panel",
+            "files": "Files"
+        },
+        "reading": "Reading Exif…",
+        "processingLabel": "Writing {{file}}…",
+        "dropzone": {
+            "idle": "Drop a set after postprod, or browse to add images",
+            "dragging": "Release to add these images",
+            "hint": "JPEG, PNG, TIFF, WebP",
+            "add": "Add images",
+            "reading": "Reading {{count}} photo(s)…"
+        },
+        "plan": {
+            "file": "{{count}} image ready",
+            "files": "{{count}} images ready",
+            "suffix": "writes beside sources with a suffix",
+            "besideFiles": "saved next to the originals",
+            "besideMixed": "saved in each original folder",
+            "chooseFolder": "Choose output folder…",
+            "clearFolder": "Save next to originals instead"
+        },
+        "tabs": {
+            "label": "Metadata sections",
+            "rights": "Rights",
+            "photo": "Photo",
+            "camera": "Camera",
+            "location": "Location",
+            "tags": "All tags"
+        },
+        "groups": {
+            "photo": "Photo",
+            "camera": "Camera",
+            "location": "Location",
+            "rights": "Creator rights",
+            "advanced": "All tags"
+        },
+        "rights": {
+            "lead": "Fill these once, then stamp the whole set. Camera and GPS on each file stay as they are.",
+            "bulkTitle": "Apply rights to {{count}} images",
+            "bulkHint": "Writes artist, copyright, credit, usage, and contact only.",
+            "applyAll": "Apply rights to {{count}}",
+            "useTemplate": "Load saved rights",
+            "saveTemplate": "Remember for next time",
+            "missingCount": "{{count}} without creator/copyright",
+            "unsaved": "rights edited"
+        },
+        "location": {
+            "lead": "Strip GPS before publishing a client set if the shoot location should stay private."
+        },
+        "queue": {
+            "missingRights": "No rights yet"
+        },
+        "fields": {
+            "description": "Caption / title",
+            "descriptionPlaceholder": "What this image shows",
+            "datetime": "Date taken",
+            "make": "Make",
+            "model": "Model",
+            "software": "Software",
+            "orientation": "Orientation",
+            "artist": "Creator",
+            "artistHint": "The person or studio who made the work.",
+            "artistPlaceholder": "Ada Photographer",
+            "copyright": "Copyright notice",
+            "copyrightHint": "Year and rights holder. Example: © 2026 Ada Photographer",
+            "copyrightPlaceholder": "© 2026 Ada Photographer",
+            "credit": "Credit line",
+            "creditHint": "How the work should be credited when published.",
+            "creditPlaceholder": "Photo: Ada Photographer / Studio North",
+            "contact": "Contact",
+            "contactHint": "Email or site for licensing requests.",
+            "contactPlaceholder": "hello@studio.example",
+            "rightsUsage": "Usage terms",
+            "rightsUsageHint": "License or restrictions. Stays with the file for anyone who inspects Exif.",
+            "rightsUsagePlaceholder": "All rights reserved. Editorial use only. No AI training without written permission.",
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "altitude": "Altitude (m)",
+            "clearGps": "Clear GPS on save"
+        },
+        "orientation": {
+            "1": "1 · Normal",
+            "3": "3 · Rotate 180°",
+            "6": "6 · Rotate 90° CW",
+            "8": "8 · Rotate 90° CCW"
+        },
+        "output": {
+            "toggle": "Output options",
+            "naming": "Output names",
+            "suffix": "Add a suffix",
+            "replace": "Same name in the output folder"
+        },
+        "advanced": {
+            "toggle": "Show all tags",
+            "hide": "Hide all tags",
+            "empty": "No Exif tags on this file.",
+            "readonly": "Read only"
+        },
+        "errors": {
+            "noResult": "No result returned",
+            "generic": "Something went wrong while writing Exif."
+        }
+    },
     "video": {
         "title": "Video",
         "subtitle": "Compress and convert videos — originals stay untouched",
