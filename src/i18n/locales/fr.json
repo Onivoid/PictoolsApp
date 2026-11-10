@@ -33,12 +33,20 @@
             "idle": "Déposez des images ou cliquez pour parcourir",
             "dragging": "Déposez les images ici",
             "hint": "PNG, JPEG, WEBP, BMP, GIF, TIFF",
+            "add": "Ajouter des images",
             "reading": "Lecture de {{count}} photo(s)…"
         },
         "status": {
             "file": "fichier",
             "files": "fichiers",
             "noResult": "Aucun résultat retourné"
+        }
+    },
+    "workbench": {
+        "panel": {
+            "collapse": "Masquer le panneau média",
+            "expand": "Afficher le panneau média",
+            "files": "Fichiers"
         }
     },
     "sidebar": {
@@ -142,11 +150,6 @@
         "clean": "À jour",
         "unsupported": "Ce format n’a pas d’Exif ici.",
         "emptyExif": "Pas d’Exif encore, prêt à remplir",
-        "panel": {
-            "collapse": "Masquer le panneau média",
-            "expand": "Afficher le panneau média",
-            "files": "Fichiers"
-        },
         "reading": "Lecture Exif…",
         "processingLabel": "Écriture de {{file}}…",
         "dropzone": {

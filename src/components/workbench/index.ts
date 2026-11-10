@@ -3,5 +3,6 @@ export { ToolDock } from "./ToolDock";
 export { FileDropzone } from "./FileDropzone";
 export { FileQueue } from "./FileQueue";
 export type { QueueFile, QueueStatus } from "./FileQueue";
+export { MediaSidePanel } from "./MediaSidePanel";
 export { BeforeAfterCompare } from "./BeforeAfterCompare";
 export { FormatChip } from "./FormatChip";

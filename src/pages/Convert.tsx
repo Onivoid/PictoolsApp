@@ -3,18 +3,18 @@ import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openPath } from "@tauri-apps/plugin-opener";
-import { FolderOpen, ImageIcon, Loader2 } from "lucide-react";
+import { FolderOpen, ImageIcon, Loader2, PanelLeftOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   BeforeAfterCompare,
   FileDropzone,
-  FileQueue,
   FormatChip,
+  MediaSidePanel,
   ToolDock,
   ToolWorkbench,
   type QueueFile,
 } from "@/components/workbench";
-import { loadImageEntries, useImageDrop } from "@/composables";
+import { loadImageEntries, useImageDrop, useLocalStorage } from "@/composables";
 import { ACCEPTED_CONVERT_EXTENSIONS } from "@/constants";
 import { formatBytes } from "@/utils/format";
 
@@ -58,6 +58,7 @@ export default function Convert() {
   const [fileProgress, setFileProgress] = useState<{ pct: number; label: string } | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
   const [detectCount, setDetectCount] = useState(0);
+  const [panelOpen, setPanelOpen] = useLocalStorage("convert-media-panel-open", true);
 
   const selectedFile = files.find((file) => file.id === selectedId) ?? files[0] ?? null;
 
@@ -258,6 +259,18 @@ export default function Convert() {
     </div>
   );
 
+  const queueFiles = files.map((file) => ({
+    ...file,
+    detail:
+      file.outputSize != null && file.originalSize != null
+        ? `${formatBytes(file.originalSize)} → ${formatBytes(file.outputSize)}`
+        : file.originalSize
+          ? formatBytes(file.originalSize)
+          : undefined,
+  }));
+
+  const panelPreviewSrc = selectedFile ? convertFileSrc(selectedFile.path) : null;
+
   return (
     <ToolWorkbench
       icon={<ImageIcon className="w-5 h-5" />}
@@ -284,34 +297,70 @@ export default function Convert() {
             onDrop={handleDrop}
           />
         ) : (
-          <>
-            {isConverting && fileProgress && (
-              <div className="absolute top-3 left-3 right-3 z-10 flex flex-col gap-1.5">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span className="truncate flex items-center gap-1.5">
-                    <Loader2 className="w-3 h-3 animate-spin text-primary" />
-                    {fileProgress.label || t("convert.converting")}
-                  </span>
-                  <span className="tabular-nums">{fileProgress.pct}%</span>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-primary transition-all duration-300"
-                    style={{ width: `${fileProgress.pct}%` }}
-                  />
-                </div>
-              </div>
-            )}
-            <BeforeAfterCompare
-              key={selectedFile?.id ?? "none"}
-              beforeSrc={beforeSrc}
-              afterSrc={afterSrc}
-              beforeLabel={t("optimize.preview.before")}
-              afterLabel={t("optimize.preview.after")}
-              compareHint={t("optimize.preview.compare")}
-              sizeLabel={sizeLabel}
+          <div className="flex h-full min-h-0 w-full flex-row bg-background">
+            <MediaSidePanel
+              open={panelOpen}
+              onOpenChange={setPanelOpen}
+              files={queueFiles}
+              selectedId={selectedFile?.id ?? null}
+              onSelect={setSelectedId}
+              onRemove={removeFile}
+              previewSrc={panelPreviewSrc}
+              previewMeta={
+                <p className="text-[11px] text-muted-foreground truncate">
+                  {selectedFile?.originalSize != null
+                    ? formatBytes(selectedFile.originalSize)
+                    : ""}
+                </p>
+              }
+              onAdd={handleBrowse}
+              addLabel={t("convert.dropzone.add")}
+              disabled={isConverting || isDetecting}
+              filesLabel={t("workbench.panel.files")}
+              collapseLabel={t("workbench.panel.collapse")}
+              expandLabel={t("workbench.panel.expand")}
             />
-          </>
+            <div className="relative flex-1 min-w-0 min-h-0 flex flex-col">
+              {!panelOpen ? (
+                <div className="shrink-0 px-3 py-2 border-b border-border/50 sm:hidden">
+                  <button
+                    type="button"
+                    onClick={() => setPanelOpen(true)}
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
+                    aria-label={t("workbench.panel.expand")}
+                  >
+                    <PanelLeftOpen className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : null}
+              {isConverting && fileProgress ? (
+                <div className="absolute top-3 left-3 right-3 z-10 flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span className="truncate flex items-center gap-1.5">
+                      <Loader2 className="w-3 h-3 animate-spin text-primary" />
+                      {fileProgress.label || t("convert.converting")}
+                    </span>
+                    <span className="tabular-nums">{fileProgress.pct}%</span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-300"
+                      style={{ width: `${fileProgress.pct}%` }}
+                    />
+                  </div>
+                </div>
+              ) : null}
+              <BeforeAfterCompare
+                key={selectedFile?.id ?? "none"}
+                beforeSrc={beforeSrc}
+                afterSrc={afterSrc}
+                beforeLabel={t("optimize.preview.before")}
+                afterLabel={t("optimize.preview.after")}
+                compareHint={t("optimize.preview.compare")}
+                sizeLabel={sizeLabel}
+              />
+            </div>
+          </div>
         )
       }
       dock={
@@ -391,19 +440,6 @@ export default function Convert() {
                 )}
               </button>
             }
-          />
-        )
-      }
-      strip={
-        empty ? undefined : (
-          <FileQueue
-            files={files}
-            selectedId={selectedFile?.id ?? null}
-            onSelect={setSelectedId}
-            onRemove={removeFile}
-            disabled={isConverting || isDetecting}
-            onAdd={handleBrowse}
-            addLabel={t("optimize.dropzone.add")}
           />
         )
       }

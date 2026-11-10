@@ -2,17 +2,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
-import { Clapperboard, Loader2 } from "lucide-react";
+import { Clapperboard, Loader2, PanelLeftOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   FileDropzone,
-  FileQueue,
   FormatChip,
+  MediaSidePanel,
   ToolDock,
   ToolWorkbench,
   type QueueFile,
 } from "@/components/workbench";
-import { loadVideoEntries, useVideoDrop } from "@/composables";
+import { loadVideoEntries, useLocalStorage, useVideoDrop } from "@/composables";
 import { ACCEPTED_VIDEO_EXTENSIONS } from "@/constants";
 import { formatBytes } from "@/utils/format";
 
@@ -88,6 +88,7 @@ export default function Video() {
   const [detectCount, setDetectCount] = useState(0);
   const [progressPercent, setProgressPercent] = useState<number | null>(null);
   const [progressFile, setProgressFile] = useState<string | null>(null);
+  const [panelOpen, setPanelOpen] = useLocalStorage("video-media-panel-open", true);
 
   const selectedFile = files.find((file) => file.id === selectedId) ?? null;
 
@@ -305,29 +306,67 @@ export default function Video() {
             onDrop={handleDrop}
           />
         ) : (
-          <div className="relative flex h-full min-h-0 w-full flex-col items-center justify-center bg-muted/30">
-            {selectedFile?.status === "error" && selectedFile.error ? (
-              <p
-                role="alert"
-                className="absolute top-3 left-1/2 z-[1] max-w-[min(36rem,90%)] -translate-x-1/2 rounded-md border border-destructive/40 bg-background/95 px-3 py-2 text-xs text-destructive text-center"
-              >
-                {selectedFile.error}
-              </p>
-            ) : null}
-            {previewSrc ? (
-              <video
-                key={previewSrc}
-                src={previewSrc}
-                controls
-                className="max-h-full max-w-full object-contain"
-                aria-label={selectedFile?.name}
-              />
-            ) : null}
-            {sizeLabel && selectedFile?.status !== "error" && (
-              <p className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-md bg-background/85 px-2.5 py-1 text-xs font-mono text-muted-foreground border border-border/60">
-                {sizeLabel}
-              </p>
-            )}
+          <div className="flex h-full min-h-0 w-full flex-row bg-background">
+            <MediaSidePanel
+              open={panelOpen}
+              onOpenChange={setPanelOpen}
+              files={queueFiles}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              onRemove={removeFile}
+              previewSrc={selectedFile ? convertFileSrc(selectedFile.path) : null}
+              previewMeta={
+                <p className="text-[11px] text-muted-foreground truncate">
+                  {queueFiles.find((file) => file.id === selectedFile?.id)?.detail ?? ""}
+                  {selectedFile?.originalSize != null
+                    ? ` · ${formatBytes(selectedFile.originalSize)}`
+                    : ""}
+                </p>
+              }
+              onAdd={handleBrowse}
+              addLabel={t("video.dropzone.add")}
+              disabled={isProcessing || isDetecting}
+              media="video"
+              filesLabel={t("workbench.panel.files")}
+              collapseLabel={t("workbench.panel.collapse")}
+              expandLabel={t("workbench.panel.expand")}
+            />
+            <div className="relative flex-1 min-w-0 min-h-0 flex flex-col items-center justify-center bg-muted/30">
+              {!panelOpen ? (
+                <div className="absolute top-2 left-2 z-[1] sm:hidden">
+                  <button
+                    type="button"
+                    onClick={() => setPanelOpen(true)}
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring bg-background/80 border border-border/60"
+                    aria-label={t("workbench.panel.expand")}
+                  >
+                    <PanelLeftOpen className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : null}
+              {selectedFile?.status === "error" && selectedFile.error ? (
+                <p
+                  role="alert"
+                  className="absolute top-3 left-1/2 z-[1] max-w-[min(36rem,90%)] -translate-x-1/2 rounded-md border border-destructive/40 bg-background/95 px-3 py-2 text-xs text-destructive text-center"
+                >
+                  {selectedFile.error}
+                </p>
+              ) : null}
+              {previewSrc ? (
+                <video
+                  key={previewSrc}
+                  src={previewSrc}
+                  controls
+                  className="max-h-full max-w-full object-contain"
+                  aria-label={selectedFile?.name}
+                />
+              ) : null}
+              {sizeLabel && selectedFile?.status !== "error" ? (
+                <p className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-md bg-background/85 px-2.5 py-1 text-xs font-mono text-muted-foreground border border-border/60">
+                  {sizeLabel}
+                </p>
+              ) : null}
+            </div>
           </div>
         )
       }
@@ -451,20 +490,6 @@ export default function Video() {
                 </section>
               </div>
             }
-          />
-        )
-      }
-      strip={
-        empty ? undefined : (
-          <FileQueue
-            files={queueFiles}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            onRemove={removeFile}
-            disabled={isProcessing || isDetecting}
-            onAdd={handleBrowse}
-            addLabel={t("video.dropzone.add")}
-            media="video"
           />
         )
       }

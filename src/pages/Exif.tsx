@@ -7,19 +7,17 @@ import {
   CopyPlus,
   Loader2,
   MapPinOff,
-  PanelLeftClose,
   PanelLeftOpen,
-  Plus,
   Save,
   Shield,
   Tags,
   Trash2,
-  X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   FileDropzone,
   FormatChip,
+  MediaSidePanel,
   ToolDock,
   ToolWorkbench,
   type QueueFile,
@@ -559,164 +557,38 @@ export default function Exif() {
           />
         ) : (
           <div className="flex h-full min-h-0 w-full flex-row bg-background">
-            {/* Retractable media panel */}
-            <aside
-              className={`shrink-0 border-r border-border/50 bg-muted/20 flex flex-col min-h-0 transition-[width] duration-200 ease-out overflow-hidden ${
-                panelOpen ? "w-[15.5rem]" : "w-12"
-              }`}
-            >
-              {panelOpen ? (
+            <MediaSidePanel
+              open={panelOpen}
+              onOpenChange={setPanelOpen}
+              files={queueFiles}
+              selectedId={selectedFile?.id ?? null}
+              onSelect={setSelectedId}
+              onRemove={removeFile}
+              previewSrc={previewSrc}
+              previewMeta={
                 <>
-                  <div className="shrink-0 flex items-center justify-between gap-2 px-2.5 py-2 border-b border-border/50">
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70 px-0.5">
-                      {t("exif.panel.files")}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setPanelOpen(false)}
-                      className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
-                      aria-label={t("exif.panel.collapse")}
-                      title={t("exif.panel.collapse")}
-                    >
-                      <PanelLeftClose className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <div className="shrink-0 p-2.5 border-b border-border/50">
-                    <div className="relative aspect-[4/3] rounded-md overflow-hidden bg-muted border border-border">
-                      {previewSrc ? (
-                        <img
-                          src={previewSrc}
-                          alt={selectedFile?.name}
-                          className="w-full h-full object-contain bg-muted/40"
-                          draggable={false}
-                        />
-                      ) : null}
-                      {selectedFile?.status === "error" && selectedFile.error ? (
-                        <p className="absolute inset-x-2 bottom-2 rounded bg-background/90 px-2 py-1 text-[10px] text-destructive">
-                          {selectedFile.error}
-                        </p>
-                      ) : null}
-                    </div>
-                    <p className="mt-2 text-xs font-medium text-foreground truncate">
-                      {selectedFile?.name}
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    {selectedFile?.originalSize != null
+                      ? formatBytes(selectedFile.originalSize)
+                      : ""}
+                    {selectedFile?.originalSize != null ? " · " : ""}
+                    {dirty ? t("exif.dirty") : t("exif.clean")}
+                  </p>
+                  {emptyExif ? (
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      {t("exif.emptyExif")}
                     </p>
-                    <p className="text-[11px] text-muted-foreground truncate">
-                      {selectedFile?.originalSize != null
-                        ? formatBytes(selectedFile.originalSize)
-                        : ""}
-                      {selectedFile?.originalSize != null ? " · " : ""}
-                      {dirty ? t("exif.dirty") : t("exif.clean")}
-                    </p>
-                    {emptyExif ? (
-                      <p className="text-[11px] text-muted-foreground mt-0.5">
-                        {t("exif.emptyExif")}
-                      </p>
-                    ) : null}
-                  </div>
-
-                  <ul className="flex-1 min-h-0 overflow-y-auto overflow-x-clip p-2 flex flex-col gap-1">
-                    {files.map((file) => {
-                      const selected = file.id === selectedFile?.id;
-                      const q = queueFiles.find((item) => item.id === file.id);
-                      return (
-                        <li key={file.id}>
-                          <div
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => setSelectedId(file.id)}
-                            onKeyDown={(event) => {
-                              if (event.key === "Enter" || event.key === " ") {
-                                event.preventDefault();
-                                setSelectedId(file.id);
-                              }
-                            }}
-                            className={`group relative flex items-center gap-2 rounded-md p-1.5 cursor-pointer border transition-colors focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-1 ${
-                              selected
-                                ? "border-primary bg-primary/8"
-                                : "border-transparent hover:bg-muted/60"
-                            }`}
-                          >
-                            <div className="relative w-10 h-10 rounded overflow-hidden bg-muted border border-border shrink-0">
-                              <img
-                                src={convertFileSrc(file.path)}
-                                alt=""
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-[11px] font-medium text-foreground truncate">
-                                {file.name}
-                              </p>
-                              <p className="text-[10px] text-muted-foreground truncate">
-                                {q?.detail ??
-                                  (file.originalSize != null
-                                    ? formatBytes(file.originalSize)
-                                    : "")}
-                              </p>
-                            </div>
-                            {!isWorking && !isDetecting ? (
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  removeFile(file.id);
-                                }}
-                                className="p-1 rounded text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ring"
-                                aria-label={file.name}
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            ) : null}
-                          </div>
-                        </li>
-                      );
-                    })}
-                    <li>
-                      <button
-                        type="button"
-                        onClick={handleBrowse}
-                        disabled={isWorking || isDetecting}
-                        className="w-full flex items-center justify-center gap-1.5 rounded-md border border-dashed border-border px-2 py-2.5 text-[11px] text-muted-foreground hover:border-primary/50 hover:text-foreground hover:bg-muted/40 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-ring"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        {t("exif.dropzone.add")}
-                      </button>
-                    </li>
-                  </ul>
-                </>
-              ) : (
-                <div className="flex flex-col items-center gap-2 py-2 h-full">
-                  <button
-                    type="button"
-                    onClick={() => setPanelOpen(true)}
-                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
-                    aria-label={t("exif.panel.expand")}
-                    title={t("exif.panel.expand")}
-                  >
-                    <PanelLeftOpen className="w-4 h-4" />
-                  </button>
-                  {previewSrc ? (
-                    <button
-                      type="button"
-                      onClick={() => setPanelOpen(true)}
-                      className="w-8 h-8 rounded overflow-hidden border border-border focus-visible:outline-2 focus-visible:outline-ring"
-                      aria-label={selectedFile?.name}
-                    >
-                      <img
-                        src={previewSrc}
-                        alt=""
-                        className="w-full h-full object-cover"
-                        draggable={false}
-                      />
-                    </button>
                   ) : null}
-                </div>
-              )}
-            </aside>
+                </>
+              }
+              onAdd={handleBrowse}
+              addLabel={t("exif.dropzone.add")}
+              disabled={isWorking || isDetecting}
+              filesLabel={t("workbench.panel.files")}
+              collapseLabel={t("workbench.panel.collapse")}
+              expandLabel={t("workbench.panel.expand")}
+            />
 
-            {/* Main editor */}
             <div className="flex-1 min-w-0 min-h-0 flex flex-col">
               <div className="shrink-0 px-4 py-2.5 border-b border-border/50 flex flex-wrap items-center gap-2">
                 {!panelOpen ? (
@@ -724,7 +596,7 @@ export default function Exif() {
                     type="button"
                     onClick={() => setPanelOpen(true)}
                     className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring sm:hidden"
-                    aria-label={t("exif.panel.expand")}
+                    aria-label={t("workbench.panel.expand")}
                   >
                     <PanelLeftOpen className="w-4 h-4" />
                   </button>

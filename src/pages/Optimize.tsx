@@ -2,18 +2,18 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
-import { ChevronDown, Loader2, Lock, Sparkles, Unlock } from "lucide-react";
+import { ChevronDown, Loader2, Lock, PanelLeftOpen, Sparkles, Unlock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   BeforeAfterCompare,
   FileDropzone,
-  FileQueue,
   FormatChip,
+  MediaSidePanel,
   ToolDock,
   ToolWorkbench,
   type QueueFile,
 } from "@/components/workbench";
-import { loadImageEntries, useImageDrop, type Orientation } from "@/composables";
+import { loadImageEntries, useImageDrop, useLocalStorage, type Orientation } from "@/composables";
 import { ACCEPTED_IMAGE_EXTENSIONS } from "@/constants";
 import { formatBytes } from "@/utils/format";
 
@@ -75,6 +75,7 @@ export default function Optimize() {
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [isDetecting, setIsDetecting] = useState(false);
   const [detectCount, setDetectCount] = useState(0);
+  const [panelOpen, setPanelOpen] = useLocalStorage("optimize-media-panel-open", true);
 
   const selectedFile = files.find((file) => file.id === selectedId) ?? files[0] ?? null;
   const useWebProfile = !resizeEnabled;
@@ -290,6 +291,7 @@ export default function Optimize() {
       : t("optimize.plan.besideFiles");
 
   const empty = files.length === 0;
+  const panelPreviewSrc = selectedFile ? convertFileSrc(selectedFile.path) : null;
 
   return (
     <ToolWorkbench
@@ -317,15 +319,51 @@ export default function Optimize() {
             onDrop={handleDrop}
           />
         ) : (
-          <BeforeAfterCompare
-            key={selectedFile?.id ?? "none"}
-            beforeSrc={beforeSrc}
-            afterSrc={afterSrc}
-            beforeLabel={t("optimize.preview.before")}
-            afterLabel={t("optimize.preview.after")}
-            compareHint={t("optimize.preview.compare")}
-            sizeLabel={sizeLabel}
-          />
+          <div className="flex h-full min-h-0 w-full flex-row bg-background">
+            <MediaSidePanel
+              open={panelOpen}
+              onOpenChange={setPanelOpen}
+              files={queueFiles}
+              selectedId={selectedFile?.id ?? null}
+              onSelect={setSelectedId}
+              onRemove={removeFile}
+              previewSrc={panelPreviewSrc}
+              previewMeta={
+                <p className="text-[11px] text-muted-foreground truncate">
+                  {queueFiles.find((file) => file.id === selectedFile?.id)?.detail ?? ""}
+                </p>
+              }
+              onAdd={handleBrowse}
+              addLabel={t("optimize.dropzone.add")}
+              disabled={isOptimizing || isDetecting}
+              filesLabel={t("workbench.panel.files")}
+              collapseLabel={t("workbench.panel.collapse")}
+              expandLabel={t("workbench.panel.expand")}
+            />
+            <div className="relative flex-1 min-w-0 min-h-0 flex flex-col">
+              {!panelOpen ? (
+                <div className="shrink-0 px-3 py-2 border-b border-border/50 sm:hidden">
+                  <button
+                    type="button"
+                    onClick={() => setPanelOpen(true)}
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
+                    aria-label={t("workbench.panel.expand")}
+                  >
+                    <PanelLeftOpen className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : null}
+              <BeforeAfterCompare
+                key={selectedFile?.id ?? "none"}
+                beforeSrc={beforeSrc}
+                afterSrc={afterSrc}
+                beforeLabel={t("optimize.preview.before")}
+                afterLabel={t("optimize.preview.after")}
+                compareHint={t("optimize.preview.compare")}
+                sizeLabel={sizeLabel}
+              />
+            </div>
+          </div>
         )
       }
       dock={
@@ -553,19 +591,6 @@ export default function Optimize() {
                 </section>
               </div>
             }
-          />
-        )
-      }
-      strip={
-        empty ? undefined : (
-          <FileQueue
-            files={queueFiles}
-            selectedId={selectedFile?.id ?? null}
-            onSelect={setSelectedId}
-            onRemove={removeFile}
-            disabled={isOptimizing || isDetecting}
-            onAdd={handleBrowse}
-            addLabel={t("optimize.dropzone.add")}
           />
         )
       }

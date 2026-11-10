@@ -33,12 +33,20 @@
             "idle": "Drop images or click to browse",
             "dragging": "Drop images here",
             "hint": "PNG, JPEG, WEBP, BMP, GIF, TIFF",
+            "add": "Add images",
             "reading": "Reading {{count}} photo(s)…"
         },
         "status": {
             "file": "file",
             "files": "files",
             "noResult": "No result returned"
+        }
+    },
+    "workbench": {
+        "panel": {
+            "collapse": "Hide media panel",
+            "expand": "Show media panel",
+            "files": "Files"
         }
     },
     "sidebar": {
@@ -142,11 +150,6 @@
         "clean": "Up to date",
         "unsupported": "This format has no Exif support here.",
         "emptyExif": "No Exif yet, ready to fill",
-        "panel": {
-            "collapse": "Hide media panel",
-            "expand": "Show media panel",
-            "files": "Files"
-        },
         "reading": "Reading Exif…",
         "processingLabel": "Writing {{file}}…",
         "dropzone": {
